@@ -77,17 +77,16 @@ def games():
 @route('/game/<name>/status/')
 def game_status(name, config=config):
     g = dotwar_classes.Game(0, name, config["game_dir"])
-    ret = {"ok":True, "status_code":200, "game":None}
-    try:
-        g.load()
-        g_json = g.as_json()["game"]
-        ret["game"] = g_json
-        ret["html"] = "<br>".join(["Game '"+name+"' status.", "NAME: "+ g_json["name"], "CREATED ON: "+g_json["created_on"], "SYSTEM TIME: "+g_json["system_time"]])
-    except Exception as e:
-        ret["ok"] = False
-        ret["status_code"] = 404
-        #ret["pretty"]=ret["html"]= "Game " +name+ " doesn't exist."
-
+    q = request.query
+    ret = {"ok":True, "game":None}
+    g.load()
+    g_json = g.as_json()["game"]
+    ret["game"] = g_json
+    if ("html" in q) and valid_json(q.html) and json.loads(q.html):
+        return "<br>".join(["Game '"+name+"' status:",
+                            "Created on: "+g_json["created_on"] + " ("+datetime.datetime.fromisoformat(g_json["created_on"]).strftime("%b %d %Y, %X")+")",
+                            "System time: "+g_json["system_time"] + " ("+datetime.datetime.fromisoformat(g_json["system_time"]).strftime("%b %d %Y, %X")+")"
+                            ])
     return ret
 
 @route("/game/<name>/scan")
