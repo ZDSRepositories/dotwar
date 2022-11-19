@@ -174,10 +174,7 @@ class Game:
         self.get_entity(entity_name)["pending"].remove(self.get_order(entity_name, order_id))
 
     def sort_orders(self, orders):
-        for div in range(len(orders)): #div is the rightmost index of the sorted portion
-            for candidate_index in range(len(orders))[div:]:
-                if orders[candidate_index]["time"] <= orders[div]["time"]:
-                    orders[div], orders[candidate_index] = orders[candidate_index], orders[div]
+        orders.sort(key=lambda o: o["time"])
         return orders
 
     def motion(self, entity_name, dt):
