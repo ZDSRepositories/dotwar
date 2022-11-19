@@ -300,7 +300,7 @@ class Game:
         return events
 
 
-if __name__=="__main__":
+if __name__=="__main__": #test code
     g = Game(0, "TESTGAME", "C:\\Users\\1zada\\PycharmProjects\\dotwar")
     g.new(overwrite=True)
     g.load()

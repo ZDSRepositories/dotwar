@@ -71,7 +71,8 @@ def games():
     pretty="\n".join(game_list)
     return {"ok":True, "html":html, "pretty":pretty, "games":game_list}
 
-
+@route('/game/<name>')
+@route('/game/<name>/')
 @route('/game/<name>/status')
 @route('/game/<name>/status/')
 def game_status(name, config=config):
