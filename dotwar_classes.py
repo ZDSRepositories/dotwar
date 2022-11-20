@@ -75,6 +75,7 @@ class Game:
 
     def save(self):
         system_file = open(self.full_path, "w")
+        """
         #convert system datetime to time string
         self.system["game"]["system_time"] = self.system["game"]["system_time"].isoformat()
         #convert np arrays representing entity vectors to lists
@@ -88,6 +89,8 @@ class Game:
 
         self.system["game"]["last_modified"] = datetime.datetime.now().isoformat()
         json.dump(self.system, system_file, indent=4)
+        """
+        json.dump(self.as_json(), system_file, indent=4)
         system_file.close()
 
     def as_json(self):
