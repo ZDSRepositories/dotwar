@@ -183,7 +183,7 @@ def agenda(name):
     if ("html" in q) and valid_json(q.html) and json.loads(q.html):
         page = ["<pre>Pending orders for vessel " + vessel["name"]+":"]
         for order in vessel["pending"]:
-            page.append("at {}: burn [{:.3f} {:.3f} {:.3f}] (order ID: {})".format(order["time"].strftime("%X on %A, %b %d, %Y"),*order["args"]["a"], order["order_id"])) # formerly format "%b %d %Y, %X"
+            page.append("at {}: burn [{:.3f} {:.3f} {:.3f}] (order ID: {})".format(order["time"].strftime("%X%p on %A, %b %d, %Y"),*order["args"]["a"], order["order_id"])) # formerly format "%b %d %Y, %X"
             page = "<br>".join(page)
             return page
 
