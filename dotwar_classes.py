@@ -21,9 +21,7 @@ def datetime_decode_hook(obj):
 
 class Game:
 
-    def __init__(self, name, game_path):
-        if type(name) != str:
-            raise ValueError("non-string passed for Game name")
+    def __init__(self, name: str, game_path: str, load = True):
         self.name = name
         self.system_path = game_path
         self.system_filename = "system." + self.name + ".json"
@@ -36,11 +34,16 @@ class Game:
         self.MAX_INSTANT_ACC = 1.6e7 #km/hr/hr
         self.LIGHTSPEED = 1079251200 # km/hr
         self.MAX_INSTANT_VEL = self.LIGHTSPEED
+        if self.save_exists() and load:
+            self.load()
 
     def save_exists(self):
         # check if save file exists already. note this does not verify the contents of the save.
         return (os.path.exists(self.system_path) and os.path.exists(
             os.path.join(self.system_path, self.system_filename)))
+
+    def system_time(self):
+        return self.system["game"]["system_time"]
 
     def new(self, overwrite=False):
         # create files on disk representing system, if they don't exist.
@@ -271,10 +274,9 @@ class Game:
 
     def update_to(self, end_date):
         # end_date: datetime
-        now = self.system["system_time"]
-        if end_date < now:
-            raise ValueError("cannot run simulation forward to a past date")
-        interval = abs(end_date - self.system["system_time"]).total_seconds()/3600
+        now = self.system["game"]["system_time"]
+        interval = (end_date - now).total_seconds()/3600
+        print("updating to", end_date, "with interval of", interval, "hours")
         self.update(interval)
 
 
@@ -316,21 +318,25 @@ if __name__=="__main__": #test code
     g = Game("TESTGAME", "C:\\Users\\1zada\\PycharmProjects\\dotwar")
     g.new(overwrite=True)
     g.load()
+
     g.add_entity("TEST1", "ADMIN", [0, 0, 0], [0, 0, 0], [0.1, 0, 0], "craft", [], 0, True)
     g.add_entity("TEST2", "ADMIN", [10, 10, 10], [0, 0, 0], [2, 2, 2], "craft", [], 1, True)
     g.add_entity("Earth", None, [0, 0, 0], [0, 0, 0], [0, 0, 0], "planet", [] ,-1)
     g.edit_entity("Earth", "captured", False)
     #g.save()
     #g.load()
-    g.add_order("TEST1", task="burn", time=(g.system["game"]["system_time"] + datetime.timedelta(hours=1)), args={"a":[0.1, 0.0, 0.0]})
+
+    """g.add_order("TEST1", task="burn", time=(g.system["game"]["system_time"] + datetime.timedelta(hours=1)), args={"a":[0.1, 0.0, 0.0]})
     g.add_order("TEST1", task="burn", time=(g.system["game"]["system_time"] + datetime.timedelta(hours=3)), args={"a":[0.0, -0.1, 0.0]})
     #print("pending orders:",g.get_pending())
     #print(g.update(25))
-    g.update(25)
-    g.add_order("TEST1", "burn", {"a":[120, 0, 0]}, time=(g.system["game"]["system_time"] + datetime.timedelta(hours=1)))
+    g.update(25/10)"""
+    #g.add_order("TEST1", "burn", {"a":[1, 0, 0]}, time=(g.system["game"]["system_time"] + datetime.timedelta(hours=1)))
     #print("pending orders:",g.get_pending())
     #print("TEST1 velocity:",g.get_entity("TEST1")["v"])
     g.save()
     #print("event log:")
+    print("Events:")
     [print(" ",event) for event in g.system["event_log"]]
+    print("Pending orders:")
     [print(order) for order in g.get_pending("TEST1")]

@@ -5,6 +5,8 @@ import bottle
 import dotwar_classes
 from bottle import run, route, request
 import os, sys, json
+#import urllib.parse
+from urllib.parse import unquote
 
 """
 Implemented endpoints:
@@ -76,7 +78,7 @@ def games():
 @route('/game/<name>/status')
 @route('/game/<name>/status/')
 def game_status(name, config=config):
-    g = dotwar_classes.Game(0, name, config["game_dir"])
+    g = dotwar_classes.Game(name, config["game_dir"])
     q = request.query
     ret = {"ok":True, "game":None}
     g.load()
@@ -91,7 +93,7 @@ def game_status(name, config=config):
 
 @route("/game/<name>/scan")
 def scan(name):
-    g=dotwar_classes.Game(0, name, config["game_dir"])
+    g=dotwar_classes.Game(name, config["game_dir"])
     g.load()
     entities=g.as_json()["entities"]
 
@@ -129,7 +131,7 @@ def scan(name):
 @route("/game/<name>/event_log")
 @route("/game/<name>/summary")
 def summary(name, config=config):
-    g = dotwar_classes.Game(0, name, config["game_dir"])
+    g = dotwar_classes.Game(name, config["game_dir"])
     g.load()
     q = request.query
     q.start, q.end = q.start.strip(), q.end.strip()
@@ -167,7 +169,7 @@ def summary(name, config=config):
 
 @route("/game/<name>/agenda")
 def agenda(name):
-    g = dotwar_classes.Game(0, name, config["game_dir"])
+    g = dotwar_classes.Game(name, config["game_dir"])
     g.load()
     q = request.query
     if not ("vessel" in q):
@@ -194,7 +196,7 @@ def agenda(name):
 
 @route("/game/<name>/add_order")
 def add_order(name):
-    g = dotwar_classes.Game(0, name, config["game_dir"])
+    g = dotwar_classes.Game(name, config["game_dir"])
     g.load()
     q = request.query
     if not ("vessel" in q):
@@ -209,12 +211,14 @@ def add_order(name):
         return {"ok": False, "msg": "Not authorized. " + q.authcode + " is not this vessel's authcode."}
     if not "order" in q:
         return {"ok":False, "msg":"Please give an order as 'order=order JSON' in query string."}
+
     if valid_json(q.order):
         order = json.loads(q.order)
     else:
-        return {"ok":False, "msg": "Invalid JSON in order."}
+        return {"ok":False, "msg": "Invalid JSON in order.", "input":q.order}
+
     allowed_keys = ["task", "args", "time"]
-    order = dict([allowed_keys, [order[key] for key in allowed_keys]])
+    #order = dict([allowed_keys, [order[key] for key in allowed_keys]])
     g.add_order(q.vessel, task=order["task"], args=order["args"], time=order["time"])
     g.save()
 
@@ -222,7 +226,12 @@ def add_order(name):
 @route("/game/<name>/update_simulation_debug")
 def update(name):
     g = dotwar_classes.Game(name, config["game_dir"])
-    return "simulation updated to ~"+datetime.datetime.now().isoformat()
+    old = g.system_time()
+    now = datetime.datetime.now()
+    g.update_to(now)
+    new = g.system_time()
+    g.save()
+    return "simulation updated to "+new.isoformat()+",delta of {}".format(new - old)
 print(get_game_list())
 run(host=config["server_addr"], port=config["server_port"], debug=True)
 
