@@ -21,8 +21,9 @@ def datetime_decode_hook(obj):
 
 class Game:
 
-    def __init__(self, game_id, name, game_path):
-        self.game_id = game_id
+    def __init__(self, name, game_path):
+        if type(name) != str:
+            raise ValueError("non-string passed for Game name")
         self.name = name
         self.system_path = game_path
         self.system_filename = "system." + self.name + ".json"
@@ -268,6 +269,14 @@ class Game:
             self.clear_order(order["parent_entity"], order["order_id"])
         return
 
+    def update_to(self, end_date):
+        # end_date: datetime
+        now = self.system["system_time"]
+        if end_date < now:
+            raise ValueError("cannot run simulation forward to a past date")
+        interval = abs(end_date - self.system["system_time"]).total_seconds()/3600
+        self.update(interval)
+
 
     def test_collisions(self, radius):
         collisions = []
@@ -304,7 +313,7 @@ class Game:
 
 
 if __name__=="__main__": #test code
-    g = Game(0, "TESTGAME", "C:\\Users\\1zada\\PycharmProjects\\dotwar")
+    g = Game("TESTGAME", "C:\\Users\\1zada\\PycharmProjects\\dotwar")
     g.new(overwrite=True)
     g.load()
     g.add_entity("TEST1", "ADMIN", [0, 0, 0], [0, 0, 0], [0.1, 0, 0], "craft", [], 0, True)

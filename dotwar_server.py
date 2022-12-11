@@ -218,7 +218,11 @@ def add_order(name):
     g.add_order(q.vessel, task=order["task"], args=order["args"], time=order["time"])
     g.save()
 
-
+#remove this testing feature before "release"!
+@route("/game/<name>/update_simulation_debug")
+def update(name):
+    g = dotwar_classes.Game(name, config["game_dir"])
+    return "simulation updated to ~"+datetime.datetime.now().isoformat()
 print(get_game_list())
 run(host=config["server_addr"], port=config["server_port"], debug=True)
 
