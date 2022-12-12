@@ -228,6 +228,7 @@ def update(name):
     g = dotwar_classes.Game(name, config["game_dir"])
     old = g.system_time()
     now = datetime.datetime.now()
+    print("simulation will be updated from {} to {}, delta of {}".format(old, now, (now - old)))
     g.update_to(now)
     new = g.system_time()
     g.save()

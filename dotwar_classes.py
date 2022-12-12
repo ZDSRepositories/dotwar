@@ -34,6 +34,7 @@ class Game:
         self.MAX_INSTANT_ACC = 1.6e7 #km/hr/hr
         self.LIGHTSPEED = 1079251200 # km/hr
         self.MAX_INSTANT_VEL = self.LIGHTSPEED
+        self.SIM_TICK = 1 # in seconds
         if self.save_exists() and load:
             self.load()
 
@@ -195,18 +196,18 @@ class Game:
     def update_interval(self, interval):
         # update interval of constant acceleration
         # interval should be in hours
-        print("\nSTARTING NEW UPDATE INTERVAL FROM",
+        print("\nSTARTING NEW UPDATE SEGMENT FROM",
               str(self.system["game"]["system_time"]),
               "TO", str(self.system["game"]["system_time"] + datetime.timedelta(hours=interval)),
               (" (interval of "+str(datetime.timedelta(hours=interval))+")")
               )
-        time = 0
+        time = 0 #elapsed time in seconds
         final_delta = {}
         for entity in self.system["entities"]:
             final_delta[entity["name"]] = self.motion(entity["name"], interval)
         collisions = []
-        instant = 1
-        while time < interval:
+        instant = self.SIM_TICK #time per tick in seconds
+        while (time / 3600) < interval:
             for entity in self.system["entities"]:
                 entity["r"] = entity["r"] + self.motion(entity["name"], instant)[0]  # update each r by one instant
                 entity["v"] = entity["v"] + self.motion(entity["name"], instant)[1]  # update each v by one instant
@@ -220,11 +221,8 @@ class Game:
             # keep generating collisions and events:
             for collision in unfiltered_collisions:
                 if not (collision in collisions):
-                    # print([collision[0]["name"], collision[1]["name"]], "is not in", collisions)
                     new_collisions.append(collision)
-            # print("COLLISIONS:", [[collision[0]["name"], collision[1]["name"]] for collision in collisions])
             collisions = new_collisions
-            # print("COLLISIONS:",[[collision[0]["name"], collision[1]["name"]] for collision in collisions])
             # find collisions that create events
             for collision in collisions:
                 entity_a, entity_b = collision
@@ -243,8 +241,8 @@ class Game:
                         print(event["args"]["defender"], "destroyed vessel", event["args"]["victim"], "at", str(event["time"]))
             time += instant
 
-        self.system["game"]["system_time"] += datetime.timedelta(seconds=(time * 3600))
-        print("ENDING AT SYSTEM TIME", str(self.system["game"]["system_time"]))
+        self.system["game"]["system_time"] += datetime.timedelta(seconds=time)
+        print("ENDING SEGMENT AT SYSTEM TIME", str(self.system_time()))
 
     def update(self, interval):
         # update over period of time (interval, in hours), including orders and changes in acceleration.
@@ -265,8 +263,9 @@ class Game:
                 #print("vessel", order["parent_entity"], "set new burn", order["args"], "at", str(order["time"]))
         #update remaining subinterval between last order and end of whole interval
         remaining_timedelta = end_time - self.system["game"]["system_time"]
+        print("SEGMENTS DONE, REMAINING TIME", remaining_timedelta)
         self.update_interval(remaining_timedelta.total_seconds() / 3600.0)
-        #print("FINISHED OVERALL UPDATE AT SYSTEM TIME", str(self.system["game"]["system_time"]))
+        print("FINISHED OVERALL UPDATE AT SYSTEM TIME", self.system_time())
         # remove processed orders
         for order in orders:
             self.clear_order(order["parent_entity"], order["order_id"])
@@ -275,7 +274,7 @@ class Game:
     def update_to(self, end_date):
         # end_date: datetime
         now = self.system["game"]["system_time"]
-        interval = (end_date - now).total_seconds()/3600
+        interval = ((end_date - now).total_seconds())/3600
         print("updating to", end_date, "with interval of", interval, "hours")
         self.update(interval)
 
@@ -331,7 +330,7 @@ if __name__=="__main__": #test code
     #print("pending orders:",g.get_pending())
     #print(g.update(25))
     g.update(25/10)"""
-    #g.add_order("TEST1", "burn", {"a":[1, 0, 0]}, time=(g.system["game"]["system_time"] + datetime.timedelta(hours=1)))
+    g.add_order("TEST1", "burn", {"a":[1, 0, 0]}, time=(g.system["game"]["system_time"] + datetime.timedelta(hours=1)))
     #print("pending orders:",g.get_pending())
     #print("TEST1 velocity:",g.get_entity("TEST1")["v"])
     g.save()
