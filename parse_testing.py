@@ -1,13 +1,19 @@
 import datetime
 
 keywords = {
-    "hours":{"-1":int},
-    "burn":{"1":int, "2":int, "3":int}
+    "hours":{-1:int},
+    "seconds":{-1:int},
+    "minutes":{-1:int},
+    "days":{-1:int},
+
+    "burn":{1:int, 2:int, 3:int},
+    "agenda":{},
+    "scan":{}
     }
 
 translations = {"hour":"hours"} #aliases
 time_keywords = ["seconds", "hours", "minutes", "days"]
-verb_keywords = ["burn"]
+verb_keywords = ["burn", "scan", "agenda"]
 s = input("input command: ")
 tokens = s.split()
 #translate tokens to their aliases
@@ -23,6 +29,7 @@ def phrasify(tokens, keywords):
     for i in range(len(tokens)):
         token = tokens[i]
         if token in keywords:
+            print("found keyword:", token)
             #start collecting arguments the keyword specifies
             arg_indices = keywords[token]
             args=[]
@@ -41,16 +48,22 @@ def phrasify(tokens, keywords):
 #an item is something relevant to the top-level parser:
 # it is a 'verb' (command, action) or 'noun' (data) that is directly relevant to a command.
 def itemify(phrases, time_keywords, verb_keywords):
-    # item types:
-    #   INTERVAL, DATE, NAME, TRIPLE, VERB_BURN, VERB_AGENDA, VERB_ADD_ORDER, VERB_SCAN, VERB_SUMMARY
+    item_types = ["INTERVAL", "DATE", "NAME", "TRIPLE", "VERB_BURN", "VERB_AGENDA", "VERB_SCAN", "VERB_SUMMARY"]
     items = []
     for phrase in phrases:
         if phrase[0] in time_keywords:
+            print("found time phrase:", phrase[0])
             delta = datetime.timedelta(**{phrase[0]:phrase[1][0]})
             items.append(["INTERVAL", delta])
         elif phrase[0] in verb_keywords:
+            print("found verb phrase:", phrase[0])
             if phrase[0] == "burn":
                 items.append(["VERB_BURN", phrase[1]])
+            else:
+                for item_type in item_types:
+                    if phrase[0].upper() in item_type:
+                        items.append([item_type])
+                        break
     return items
 
 
