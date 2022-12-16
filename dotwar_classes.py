@@ -71,10 +71,7 @@ class Game:
             entity["a"] = np.array(entity["a"])
         #convert order time strings to datetime objects
         for order in self.get_pending():
-            try:
-                order["time"] = datetime.datetime.fromisoformat(order["time"])
-            except:
-                pass
+            order["time"] = datetime.datetime.fromisoformat(order["time"])
         #print("SYSTEM TIME:",str(self.system["game"]["system_time"]))
         system_file.close()
 
@@ -143,7 +140,7 @@ class Game:
         order = {}
         order["task"] = task
         order["args"] = args
-        order["time"] = time
+        order["time"] = datetime.datetime.isoformat(time) if type(time)==str else time
         if task=="burn":
             if not "a" in args:
                 raise Exception("Burn order creation missing 'a' in args")
