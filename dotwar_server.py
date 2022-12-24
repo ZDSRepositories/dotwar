@@ -15,11 +15,11 @@ Implemented endpoints:
  /game/<name>/scan
  /game/<name>/event_log, /game/<name>/summary
  /game/<name>/agenda?vessel=&authcode=
-To do:
  /add_order?vessel=&authcode=&order={"task":"burn","args":{"a":[3d acceleration]}},"time":ISO date string}
+To do:
  /delete_order?vessel=&authcode=&order_id=
- /request.......
  /parse?query=
+ Convert all endpoints from GET to POST
  
 """
 
@@ -105,6 +105,7 @@ def game_status(name, config=config):
 
 @route("/game/<name>/scan")
 def scan(name):
+    update_to_now(name)
     g = dotwar_classes.Game(name, config["game_dir"])
     g.load()
     entities = g.as_json()["entities"]
@@ -247,19 +248,19 @@ def add_order(name):
         order["time"] = datetime.datetime.now()
     g.add_order(q.vessel, task=order["task"], args=order["args"], time=order["time"])
     g.save()
+    return {"ok":True, "msg":"order "+str(order)+" successfully given to vessel "+ q.vessel}
 
 
-# remove this testing feature before "release"!
-@route("/game/<name>/update_simulation_debug")
-def update(name):
+#@route("/game/<name>/update_simulation_debug")
+def update_to_now(name):
     g = dotwar_classes.Game(name, config["game_dir"])
     old = g.system_time()
     now = datetime.datetime.now()
-    print("simulation will be updated from {} to {}, delta of {}".format(old, now, (now - old)))
+    print("simulation will be updated from {} to {}, delta of {}".format(old, now, (now - old)),"...")
     g.update_to(now)
     new = g.system_time()
     g.save()
-    return "simulation updated to " + new.isoformat() + ",delta of {}".format(new - old)
+    print("simulation updated to " + new.isoformat() + ",delta of {}".format(new - old))
 
 
 print(get_game_list())

@@ -34,7 +34,7 @@ class Game:
         self.MAX_INSTANT_ACC = 1.6e7 #km/hr/hr
         self.LIGHTSPEED = 1079251200 # km/hr
         self.MAX_INSTANT_VEL = self.LIGHTSPEED
-        self.SIM_TICK = 1 # in seconds
+        self.SIM_TICK = 1 # in seconds.
         if self.save_exists() and load:
             self.load()
 
@@ -140,7 +140,7 @@ class Game:
         order = {}
         order["task"] = task
         order["args"] = args
-        order["time"] = datetime.datetime.isoformat(time) if type(time)==str else time
+        order["time"] = datetime.datetime.fromisoformat(time) if type(time)==str else time
         if task=="burn":
             if not "a" in args:
                 raise Exception("Burn order creation missing 'a' in args")
