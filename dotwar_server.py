@@ -17,8 +17,9 @@ Implemented endpoints:
  /game/<name>/agenda?vessel=&authcode=
  /add_order?vessel=&authcode=&order={"task":"burn","args":{"a":[3d acceleration]}},"time":ISO date string}
 To do:
- /delete_order?vessel=&authcode=&order_id=
+ /game/<name>/delete_order?vessel=&authcode=&order_id=
  /parse?query=
+ /play?name= returns the client, setup for the specified game 
  Convert all endpoints from GET to POST
  
 """
