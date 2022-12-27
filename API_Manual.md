@@ -27,7 +27,7 @@ Optional parameters: none.
 
 Output: a json object with a `games` key containing a list of names.
 
-Example:
+#### Example:
 
 Call: `/games`
 
@@ -45,7 +45,7 @@ Required parameters: none.
 
 Optional parameters: `html`
 
-Examples: 
+#### Examples: 
 
 Call: `/game/TESTGAME/status` with `html=0`
 
