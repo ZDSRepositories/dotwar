@@ -31,7 +31,12 @@ Example:
 
 Call: `/games`
 
-Output: `{"ok": true, "games": ["TESTGAME"]}`
+Output: 
+
+    {
+    "ok": true,
+    "games": ["TESTGAME"]
+    }
 
 ### /game/[name]/status
 Provides status and current simulation time of the game of specified name.
@@ -44,7 +49,17 @@ Examples:
 
 Call: `/game/TESTGAME/status` with `html=0`
 
-Output: `{"ok": true, "game": {"name": "TESTGAME", "created_on": "2022-12-16T11:24:18.194421", "last_modified": "2022-12-16T11:24:18.194421", "system_time": "2022-12-22T17:41:55.194421"}}`
+Output: 
+
+    {
+    "ok": true,
+    "game": 
+        {"name": "TESTGAME", 
+        "created_on": "2022-12-16T11:24:18.194421", 
+        "last_modified": "2022-12-16T11:24:18.194421", 
+        "system_time": "2022-12-22T17:41:55.194421"
+        }
+    }
 
 Call: `/game/TESTGAME/status` with `html=1`
 
