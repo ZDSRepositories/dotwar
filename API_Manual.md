@@ -33,7 +33,7 @@ Call: `/games`
 
 Output: `{"ok": true, "games": ["TESTGAME"]}`
 
-#### /game/[name]/status
+### /game/[name]/status
 Provides status and current simulation time of the game of specified name.
 
 Required parameters: none.
