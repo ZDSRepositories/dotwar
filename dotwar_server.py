@@ -153,9 +153,9 @@ table {
 
 td, th {
   font-size: 14px;
-  border: 1px solid #000000;
-  text-align: center;
-  padding: 4px;
+  /*border: 1px solid #000000;*/
+  text-align: left;
+  padding: 5px;
 }
 
 tr:nth-child(even) {
