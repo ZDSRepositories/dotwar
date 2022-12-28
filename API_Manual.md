@@ -202,7 +202,7 @@ Updates sim: after operation.
 Call: `/game/TESTGAME/agenda` with `vessel=TEST1` and `authcode=733a9f3f-debc-42a0-8c71-7da1a7debdca` and `order={"task": "burn", "args": {"a": [0, 0, 0]}, "time": "2022-12-28T19:41:38.176481"}`\
 Output: 
 ```
-{"ok": true, "vessel":"TEST1", "order_id":1}
+{"ok": true, "vessel":"TEST1", "added_id":1}
 ```
 
 Call: `/game/TESTGAME/agenda` with `vessel=TEST1` and `authcode=733a9f3f-debc-42a0-8c71-7da1a7debdca` and `order={"task": "burn", "args": {"a": [0, 0, 0]}, "time": "2022-12-28T19:41:38.176481"}` and `html=1`\
