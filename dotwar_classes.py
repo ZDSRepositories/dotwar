@@ -205,9 +205,6 @@ class Game:
 		      (" (interval of " + str(datetime.timedelta(hours=interval)) + ")")
 		      )
 		time = 0  # elapsed time in seconds
-		final_delta = {}
-		for entity in self.system["entities"]:
-			final_delta[entity["name"]] = self.motion(entity["name"], interval)
 		collisions = []
 		instant = self.SIM_TICK  # time per tick in seconds
 		while (time / 3600) < interval:
