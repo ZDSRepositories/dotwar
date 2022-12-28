@@ -4,7 +4,9 @@ import bottle
 
 import dotwar_classes
 from bottle import run, route, request
-import os, sys, json
+import os
+import sys
+import json
 # import urllib.parse
 from urllib.parse import unquote
 
@@ -28,9 +30,9 @@ To do:
 def load_config(directory=sys.path[0]):
 	if os.path.exists(os.path.join(directory, "config.json")):
 		config_file = open("config.json", "r")
-		config = json.load(config_file)
+		loaded_config = json.load(config_file)
 		config_file.close()
-		return config
+		return loaded_config
 	else:
 		return {
 			"server_addr": "localhost",
@@ -44,11 +46,11 @@ def load_config(directory=sys.path[0]):
 
 def get_game_list(directory=sys.path[0]):
 	files = os.listdir(directory)
-	games = []
+	game_list = []
 	for file in files:
 		if file.startswith("system.") and file.endswith(".json"):
-			games.append(file.split(".")[1])
-	return games
+			game_list.append(file.split(".")[1])
+	return game_list
 
 
 def valid_json(json_string):
@@ -70,8 +72,7 @@ def valid_datetime(iso_string):
 def generate_table(headers, data_rows):
 	# headers: list of table headers.
 	# data_rows: list of rows of the table, each row a list of individual elements
-	table_rows = []
-	table_rows.append("<tr>" + ("".join(["<th>" + header + "</th>" for header in headers])) + "</tr>")
+	table_rows = ["<tr>" + ("".join(["<th>" + header + "</th>" for header in headers])) + "</tr>"]
 	for data_row in data_rows:
 		table_rows.append(
 			"<pre>" + (
@@ -81,13 +82,12 @@ def generate_table(headers, data_rows):
 	return "<table>" + "".join(table_rows) + "</table>"
 
 
-config = load_config(sys.path[0])
+global_config = load_config(sys.path[0])
 
 
 @route('/')
-def hello_world(config=config):
-	return config["welcome"] + """<br>
-    Running games:<br>""" + "<br> ".join(get_game_list()) + """<hr>"""
+def hello_world(config=global_config):
+	return config["welcome"] + """<br>Running games:<br>""" + "<br> ".join(get_game_list()) + """<hr>"""
 
 
 @route('/games')
@@ -100,7 +100,7 @@ def games():
 @route('/game/<name>/')
 @route('/game/<name>/status')
 @route('/game/<name>/status/')
-def game_status(name, config=config):
+def game_status(name, config=global_config):
 	g = dotwar_classes.Game(name, config["game_dir"])
 	q = request.query
 	ret = {"ok": True, "game": None}
@@ -120,7 +120,7 @@ def game_status(name, config=config):
 @route("/game/<name>/scan")
 def scan(name):
 	update_to_now(name)
-	g = dotwar_classes.Game(name, config["game_dir"])
+	g = dotwar_classes.Game(name, global_config["game_dir"])
 	g.load()
 	entities = g.as_json()["entities"]
 
@@ -141,14 +141,15 @@ def scan(name):
 		page = ["<pre>NAME\tTYPE\tCAPTAIN\tPOSITION\t\tHEADING\t\t\tACCELERATION\t\tALLEGIANCE"]
 		for entity in entities:
 			desc = "&#9;".join([str(attr) for attr in
-								[entity["name"],
-								 entity["type"],
-								 (entity["captain"] if entity["captain"] else "----"),
-								 " ".join([format(value, ".3f") for value in (entity["r"])]),
-								 " ".join([format(value, ".3f") for value in (entity["v"])]),
-								 " ".join([format(value, ".3f") for value in (entity["a"])]),
-								 ["Defenders", "Attackers", "Itself"][entity["team"]]
-								 ]
+								[
+									entity["name"],
+									entity["type"],
+									(entity["captain"] if entity["captain"] else "----"),
+									" ".join([format(value, ".3f") for value in (entity["r"])]),
+									" ".join([format(value, ".3f") for value in (entity["v"])]),
+									" ".join([format(value, ".3f") for value in (entity["a"])]),
+									["Defenders", "Attackers", "Itself"][entity["team"]]
+								]
 								]
 							   )
 			page.append(desc)
@@ -162,7 +163,7 @@ def scan(name):
 
 @route("/game/<name>/event_log")
 @route("/game/<name>/summary")
-def summary(name, config=config):
+def summary(name, config=global_config):
 	g = dotwar_classes.Game(name, config["game_dir"])
 	g.load()
 	q = request.query
@@ -205,7 +206,7 @@ def summary(name, config=config):
 
 @route("/game/<name>/agenda")
 def agenda(name):
-	g = dotwar_classes.Game(name, config["game_dir"])
+	g = dotwar_classes.Game(name, global_config["game_dir"])
 	g.load()
 	q = request.query
 	if not ("vessel" in q):
@@ -239,7 +240,7 @@ def agenda(name):
 
 @route("/game/<name>/add_order")
 def add_order(name):
-	g = dotwar_classes.Game(name, config["game_dir"])
+	g = dotwar_classes.Game(name, global_config["game_dir"])
 	g.load()
 	q = request.query
 	if not ("vessel" in q):
@@ -271,7 +272,7 @@ def add_order(name):
 
 # @route("/game/<name>/update_simulation_debug")
 def update_to_now(name):
-	g = dotwar_classes.Game(name, config["game_dir"])
+	g = dotwar_classes.Game(name, global_config["game_dir"])
 	old = g.system_time()
 	now = datetime.datetime.now()
 	print("simulation will be updated from {} to {}, delta of {}".format(old, now, (now - old)), "...")
@@ -287,8 +288,9 @@ application = bottle.default_app()
 print("[INFO] Created default_app")
 
 if __name__ == "__main__":
-	print("[INFO] Starting dev server on", config["server_addr"], config["server_port"], "with debug",
-		  ["disabled", "enabled"][config["debug"]] + "...")
-	run(app=application, host=config["server_addr"], port=config["server_port"], debug=config["debug"])
+	print("[INFO] Starting dev server on", global_config["server_addr"], global_config["server_port"], "with debug",
+		  ["disabled", "enabled"][global_config["debug"]] + "...")
+	run(app=application, host=global_config["server_addr"], port=global_config["server_port"],
+		debug=global_config["debug"])
 else:
 	print("[INFO] Not in __main__, continuing with default_app only instantiated")

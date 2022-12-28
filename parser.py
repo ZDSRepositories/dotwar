@@ -24,8 +24,8 @@ class Parser:
 		self.time_keywords = time_keywords
 		self.verb_keywords = verb_keywords
 
-	def tokenify(self, s):
-		tokens = s.split()  # example: "in 2 hours burn 0 0 0"
+	def tokenify(self, input_string):
+		tokens = input_string.split()  # example: "in 2 hours burn 0 0 0"
 		# translate tokens to their aliases
 		for i in range(len(tokens)):
 			token = tokens[i]
@@ -35,9 +35,9 @@ class Parser:
 
 	# detect meaningful tokens and assemble them into 'phrases'
 	# a phrase is a token and the set of other tokens relevant to it
-	def phrasify(self, s=None, tokens=None):
-		if tokens == None:
-			tokens = self.tokenify(s)
+	def phrasify(self, input_string=None, tokens=None):
+		if tokens is None:
+			tokens = self.tokenify(input_string)
 		phrases = []
 		for i in range(len(tokens)):
 			token = tokens[i]
@@ -48,8 +48,8 @@ class Parser:
 				args = []
 				for arg_index in arg_indices:
 					arg = tokens[i + int(arg_index)]
+					arg_type = arg_indices[arg_index]
 					try:
-						arg_type = arg_indices[arg_index]
 						arg = arg_type(arg)
 						args.append(arg)
 					except ValueError:
@@ -62,9 +62,9 @@ class Parser:
 	# take phrases and turn them into 'items', replacing input data with python objects as appropriate e.g. timedeltas
 	# an item is something relevant to the top-level parser:
 	# it is a 'verb' (command, action) or 'noun' (data) that is directly relevant to a command.
-	def itemify(self, s=None, phrases=None):
-		if phrases == None:
-			phrases = self.phrasify(s=s)
+	def itemify(self, input_string=None, phrases=None):
+		if phrases is None:
+			phrases = self.phrasify(input_string=input_string)
 		item_types = ["INTERVAL", "DATE", "NAME", "VERB_BURN", "VERB_AGENDA", "VERB_SCAN", "VERB_SUMMARY"]
 		items = []
 		for phrase in phrases:
@@ -78,11 +78,11 @@ class Parser:
 			break
 		return items
 
-	def classify(self, s=None, items=None):
-		if items == None:
-			items = self.itemify(s=s)
+	def classify(self, input_string=None, items=None):
+		if items is None:
+			items = self.itemify(input_string=input_string)
 
 
-p = Parser()
-s = input("command vessel> ")
-print(p.itemify(s=s))
+parser_global = Parser()
+input_string_global = input("command vessel> ")
+print(parser_global.itemify(input_string=input_string_global))
