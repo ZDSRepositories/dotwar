@@ -66,6 +66,20 @@ def valid_datetime(iso_string):
         return False
     return True
 
+def generate_table(headers, data_rows):
+    # headers: list of table headers.
+    # data_rows: list of rows of the table, each row a list of individual elements
+    table_rows = []
+    table_rows.append("<tr>"+("".join(["<th>"+header+"</th>" for header in headers]))+"</tr>")
+    for data_row in data_rows:
+        table_rows.append(
+            "<tr>"+ (
+                "".join(["<td>"+element+"</td>" for element in data_row])
+            ) + "</tr>"
+        )
+
+    return "<table>"+"".join(table_rows)+"</table>"
+
 
 config = load_config(sys.path[0])
 
