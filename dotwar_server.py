@@ -19,7 +19,7 @@ Implemented endpoints:
 To do:
  /game/<name>/delete_order?vessel=&authcode=&order_id=
  /parse?query=
- /play?name= returns the client, setup for the specified game 
+ /play/<name> returns the client, setup for the specified game 
  Convert all endpoints from GET to POST
  
 """
@@ -78,9 +78,7 @@ def hello_world(config=config):
 @route('/games')
 def games():
     game_list = get_game_list()
-    html = "<br>".join(game_list)
-    pretty = "\n".join(game_list)
-    return {"ok": True, "html": html, "pretty": pretty, "games": game_list}
+    return {"ok": True, "games":game_list}
 
 
 @route('/game/<name>')
