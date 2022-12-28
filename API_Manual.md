@@ -149,3 +149,31 @@ Dec 27 2022, 18:42:58  [ATK] vessel TEST2 captured Earth
 Dec 27 2022, 19:42:58  [NAV] vessel TEST1 started burn [1, 0, 0] while at coords [648000.0, 0.0, 0.0]
 ```
 
+### /game/[name]/agenda
+Display the pending orders of a vessel. Needs vessel's authcode.
+
+Required parameters: `vessel` `authcode`
+
+Optional parameters: `html`
+
+#### Examples
+
+Call: `/game/TESTGAME/agenda` with `vessel=TEST1` and `authcode=733a9f3f-debc-42a0-8c71-7da1a7debdca`\
+Output: 
+```
+{"ok": true, 
+"agenda": [
+    {'task': 'burn', 
+    'args': {'a': [1, 0, 0]}, 
+    'time': '2022-12-28T02:52:59.123854', 
+    'order_id': 0, 
+    'parent_entity': 'TEST1'}
+]}
+```
+
+Call: `/game/TESTGAME/agenda` with `vessel=TEST1` and `authcode=733a9f3f-debc-42a0-8c71-7da1a7debdca` and `html=1`\
+Output:
+```
+Pending orders for vessel TEST1:
+at 02:52 AM on Wednesday, Dec 28, 2022: burn [1.000 0.000 0.000] ; order ID: 0
+```
