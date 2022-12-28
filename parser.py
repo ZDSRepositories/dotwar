@@ -44,14 +44,14 @@ class Parser:
 			if token in self.keywords:
 				# print("found keyword:", token)
 				# start collecting arguments the keyword specifies
-				arg_indices = self.keywords[token]
-				args = []
-				for arg_index in arg_indices:
-					arg = tokens[i + int(arg_index)]
+				arg_indices = self.keywords[token] #expected locations of arguments
+				args = [] # collected arguments
+				for arg_index in arg_indices: #for each expected position
+					arg = tokens[i + int(arg_index)] #collect arg
 					try:
-						arg_type = arg_indices[arg_index]
-						arg = arg_type(arg)
-						args.append(arg)
+						arg_type = arg_indices[arg_index] # expected type of arg
+						arg = arg_type(arg) # convert collected arg string to expected type
+						args.append(arg) # add converted arg to args
 					except ValueError:
 						raise ValueError(
 							"keyword " + token + " expected token of type " + str(arg_type) + " at index " + str(
