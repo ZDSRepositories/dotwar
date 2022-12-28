@@ -8,7 +8,7 @@ If you are a defender, your mission is to eliminate all attackers.
 ### Conventions and Constraints
 All dimensions are in terms of kilometers, hours, kilometers/hour, or combinations of these.\
 No vessel can accelerate with a greater magnitude than 1.6e7 km/hr/hr. Accelerations will automatically be snipped to this amount.\
-Vessels can travel at speeds up to approximately lightspeed, specifically 1079251200 km/hr, and velocities will automatically be snipped to this amount.\
+Vessels can travel at speeds up to approximately lightspeed, specifically 1079251200 km/hr, and velocities will automatically be snipped to this amount.
 
 ### Control and Movement
 Objects in the system move "in real time", according to simple Newtonian kinematics of constant acceleration.\
