@@ -271,6 +271,7 @@ print("[INFO] Detected games:", get_game_list())
 print("[INFO] __name__ at startup:", __name__)
 application = bottle.default_app()
 print("[INFO] Created default_app")
+
 if __name__ == "__main__":
     print("[INFO] Starting dev server on", config["server_addr"], config["server_port"], "with debug", ["disabled", "enabled"][config["debug"]] + "...")
     run(app=application, host=config["server_addr"], port=config["server_port"], debug=config["debug"])
