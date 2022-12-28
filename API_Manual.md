@@ -43,6 +43,8 @@ Optional parameters: none.
 
 Output: a json object with a `games` key containing a list of names.
 
+Updates sim: no.
+
 #### Example:
 
 Call: `/games`
@@ -60,6 +62,8 @@ Provides status and current simulation time of the game of specified name.
 Required parameters: none.
 
 Optional parameters: `html`
+
+Updates sim: before operation.
 
 #### Examples: 
 
@@ -92,6 +96,8 @@ Lists the position, heading, acceleration, and other public properties of each o
 Required parameters: none.
 
 Optional parameters: `html` `filter`
+
+Updates sim: before operation.
 
 #### Examples:
 
@@ -126,6 +132,8 @@ Required parameters: none.
 
 Optional parameters: `html` `start` `end`
 
+Updates sim: before operation.
+
 #### Examples
 
 Call: `/game/TESTGAME/summary`
@@ -150,11 +158,13 @@ Dec 27 2022, 19:42:58  [NAV] vessel TEST1 started burn [1, 0, 0] while at coords
 ```
 
 ### /game/[name]/agenda
-Display the pending orders of a vessel. Needs vessel's authcode.
+Display the pending orders of a vessel.
 
 Required parameters: `vessel` `authcode`
 
 Optional parameters: `html`
+
+Updates sim: before operation.
 
 #### Examples
 
@@ -177,3 +187,27 @@ Output:
 Pending orders for vessel TEST1:
 at 02:52 AM on Wednesday, Dec 28, 2022: burn [1.000 0.000 0.000] ; order ID: 0
 ```
+
+### /game/[name]/add_order
+Add an order to a vessel's list of pending orders.
+
+Required parameters: `vessel` `authcode` `order`
+
+Optional parameters: `html`
+
+Updates sim: after operation.
+
+#### Examples
+Call: `/game/TESTGAME/agenda` with `vessel=TEST1` and `authcode=733a9f3f-debc-42a0-8c71-7da1a7debdca` and `order={"task": "burn", "args": {"a": [0, 0, 0]}, "time": "2022-12-28T19:41:38.176481"}`\
+Output: 
+```
+{
+"ok": true, 
+"msg": 
+    "order {'task': 'burn', 'args': {'a': [0, 0, 0]}, 'time': '2022-12-28T19:41:38.176481'} successfully given to vessel TEST1"
+}
+```
+
+Call: `/game/TESTGAME/agenda` with `vessel=TEST1` and `authcode=733a9f3f-debc-42a0-8c71-7da1a7debdca` and `order={"task": "burn", "args": {"a": [0, 0, 0]}, "time": "2022-12-28T19:41:38.176481"}` and `html=1`\
+Output: `Order 'burn <0.000 0.000 0.000> at 07:41 PM on Wednesday, Dec 28, 2022' successfully given to vessel TEST1.`
+
