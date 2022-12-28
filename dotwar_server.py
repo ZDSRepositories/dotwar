@@ -203,7 +203,6 @@ def summary(name, config=global_config):
 
 	if ("start" in q and "end" in q) and not (valid_datetime(q.start) and valid_datetime(q.end)):
 		return {"ok": False, "msg": "if used, start and end must be ISO datetime strings"}
-
 	if "html" in q and valid_json(q.html) and json.loads(q.html):
 		page = ["<pre>Events between " + (q.start if q.start else "system start") + " and " + (
 			q.end if q.end else "current time:")]
@@ -223,8 +222,7 @@ def summary(name, config=global_config):
 				abbr = "  [NAV] "
 			desc = abbr.join([time, " ".join(desc)])
 			page.append(desc)
-
-		return "<br/>".join(page)
+			return "<br/>".join(page)
 
 	else:
 		return {"ok": True, "events": events}
@@ -281,7 +279,7 @@ def add_order(name):
 		bottle.response.status = 403
 		return {"ok": False, "msg": "Not authorized. " + q.authcode + " is not this vessel's authcode."}
 	if not "order" in q:
-		return {"ok": False, "msg": "Please give an order as 'order=order JSON' in query string."}
+		return {"ok": False, "msg": "Please give an order as JSON in query string."}
 
 	if valid_json(q.order):
 		order = json.loads(q.order)
@@ -291,9 +289,13 @@ def add_order(name):
 	allowed_keys = ["task", "args", "time"]
 	if not "time" in order:
 		order["time"] = datetime.datetime.now()
-	g.add_order(q.vessel, task=order["task"], args=order["args"], time=order["time"])
+	order["time"] = datetime.datetime.fromisoformat(order["time"]) if type(order["time"]) == str else order["time"]
+	order_id = g.add_order(q.vessel, task=order["task"], args=order["args"], time=order["time"])
 	g.save()
-	return {"ok": True, "msg": "order " + str(order) + " successfully given to vessel " + q.vessel}
+	if "html" in q and valid_json(q.html) and json.loads(q.html):
+		return f"Order <code>{order['task']} {order['args']} at {order['time']:%I:%M %p on %A, %b %d, %Y}</code> given to vessel {q.vessel} with order ID {order_id}."
+	else:
+		return {"ok": True, "vessel":q.vessel, "added_id": order_id}
 
 
 # @route("/game/<name>/update_simulation_debug")

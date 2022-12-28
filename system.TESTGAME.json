@@ -3,26 +3,26 @@
         "name": "TESTGAME",
         "created_on": "2022-12-28T01:52:59.123854",
         "last_modified": "2022-12-28T01:52:59.123854",
-        "system_time": "2022-12-28T01:52:59.123854"
+        "system_time": "2022-12-28T16:14:49.123854"
     },
     "entities": [
         {
             "name": "TEST1",
             "captain": "ADMIN",
             "r": [
-                0,
-                0,
-                0
-            ],
-            "v": [
-                0,
-                0,
-                0
-            ],
-            "a": [
-                0.1,
+                1175253650.0,
                 0.0,
                 0.0
+            ],
+            "v": [
+                48470.000000000015,
+                0.0,
+                0.0
+            ],
+            "a": [
+                1,
+                0,
+                0
             ],
             "type": "craft",
             "pending": [
@@ -30,13 +30,52 @@
                     "task": "burn",
                     "args": {
                         "a": [
-                            1,
+                            0,
                             0,
                             0
                         ]
                     },
-                    "time": "2022-12-28T02:52:59.123854",
-                    "order_id": 0,
+                    "time": "2022-12-28T19:41:38.176481",
+                    "order_id": 1,
+                    "parent_entity": "TEST1"
+                },
+                {
+                    "task": "burn",
+                    "args": {
+                        "a": [
+                            0,
+                            0,
+                            0
+                        ]
+                    },
+                    "time": "2022-12-28T19:41:38.176481",
+                    "order_id": 2,
+                    "parent_entity": "TEST1"
+                },
+                {
+                    "task": "burn",
+                    "args": {
+                        "a": [
+                            0,
+                            0,
+                            0
+                        ]
+                    },
+                    "time": "2022-12-28T19:41:38.176481",
+                    "order_id": 3,
+                    "parent_entity": "TEST1"
+                },
+                {
+                    "task": "burn",
+                    "args": {
+                        "a": [
+                            0,
+                            0,
+                            0
+                        ]
+                    },
+                    "time": "2022-12-28T19:41:38.176481",
+                    "order_id": 4,
                     "parent_entity": "TEST1"
                 }
             ],
@@ -45,36 +84,12 @@
             "authcode": "46f606cd-a533-4a63-b651-d3813703c488"
         },
         {
-            "name": "TEST2",
-            "captain": "ADMIN",
-            "r": [
-                10,
-                10,
-                10
-            ],
-            "v": [
-                0,
-                0,
-                0
-            ],
-            "a": [
-                2,
-                2,
-                2
-            ],
-            "type": "craft",
-            "pending": [],
-            "team": 1,
-            "created_on": "2022-12-28T01:52:59.128858",
-            "authcode": "cc8cea07-01ee-4714-a8de-ff427fbdaa13"
-        },
-        {
             "name": "Earth",
             "captain": null,
             "r": [
-                0,
-                0,
-                0
+                0.0,
+                0.0,
+                0.0
             ],
             "v": [
                 0,
@@ -90,8 +105,45 @@
             "pending": [],
             "team": -1,
             "created_on": "2022-12-28T01:52:59.128858",
-            "captured": false
+            "captured": true
         }
     ],
-    "event_log": []
+    "event_log": [
+        {
+            "type": "defense",
+            "args": {
+                "defender": "TEST1",
+                "victim": "TEST2"
+            },
+            "time": "2022-12-28T01:52:59.123854",
+            "event_id": 0
+        },
+        {
+            "type": "capture",
+            "args": {
+                "attacker": "TEST2",
+                "planet": "Earth"
+            },
+            "time": "2022-12-28T01:52:59.123854",
+            "event_id": 1
+        },
+        {
+            "type": "burn",
+            "args": {
+                "vessel": "TEST1",
+                "a": [
+                    1,
+                    0,
+                    0
+                ],
+                "position": [
+                    647999.9999999906,
+                    0.0,
+                    0.0
+                ]
+            },
+            "time": "2022-12-28T02:52:59.123854",
+            "event_id": 2
+        }
+    ]
 }

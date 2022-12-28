@@ -151,10 +151,11 @@ class Game:
 			if "a" not in args:
 				raise Exception("Burn order creation missing 'a' in args")
 
-		order["order_id"] = (entity["pending"][-1]["order_id"] + 1) if entity["pending"] else 0
+		order["order_id"] = (max([pending_order["order_id"] for pending_order in entity["pending"]]) + 1) if entity["pending"] else 0
 		order["parent_entity"] = entity_name
 		entity["pending"].append(order)
 		print("ADDING ORDER WITH TIME:", str(order["time"]))
+		return order["order_id"]
 
 	def get_pending(self, entity_name=None):
 		if entity_name:
