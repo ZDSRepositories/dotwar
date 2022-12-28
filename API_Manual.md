@@ -19,7 +19,7 @@ All parameters are provided as POST headers, although this page lists them as GE
 All dates are expected and returned as ISO-format strings, specifically those compatible with Python's `datetime` module.\
 Other parameters are expected to be strings, or strings of valid JSON (that is, parseable by Python `json.loads()`.)
 
-Several endpoints have optional parameters in common.
+Several endpoints have optional parameters in common:
 param name | expected format | effect
 ---|---|---
 `html` | Boolean | Determine if JSON or pretty HTML will be returned
