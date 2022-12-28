@@ -224,4 +224,4 @@ Output: `{"ok":true, "removed_id":1, "pending_count": 1}`
 
 Call: `/game/[name]/delete_order` with `vessel=TEST1` and `authcode=733a9f3f-debc-42a0-8c71-7da1a7debdca` and `order_id=1` and `html=1`
 
-Output: `Removed order #1 from vessel TEST1. 1 order(s) pending.`
+Output: `Removed order with ID 1 from vessel TEST1. 1 order(s) pending.`
