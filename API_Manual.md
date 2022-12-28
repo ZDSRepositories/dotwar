@@ -189,7 +189,8 @@ at 02:52 AM on Wednesday, Dec 28, 2022: burn [1.000 0.000 0.000] ; order ID: 0
 ```
 
 ### /game/[name]/add_order
-Add an order to a vessel's list of pending orders.
+Add an order to a vessel's list of pending orders.\
+The order will be assigned an integer order ID. Order IDs start at 0 and new IDs are equal to the highest current ID + 1.
 
 Required parameters: `vessel` `authcode` `order`
 
@@ -201,13 +202,26 @@ Updates sim: after operation.
 Call: `/game/TESTGAME/agenda` with `vessel=TEST1` and `authcode=733a9f3f-debc-42a0-8c71-7da1a7debdca` and `order={"task": "burn", "args": {"a": [0, 0, 0]}, "time": "2022-12-28T19:41:38.176481"}`\
 Output: 
 ```
-{
-"ok": true, 
-"msg": 
-    "order {'task': 'burn', 'args': {'a': [0, 0, 0]}, 'time': '2022-12-28T19:41:38.176481'} successfully given to vessel TEST1"
-}
+{"ok": true, "vessel":"TEST1", "order_id":1}
 ```
 
 Call: `/game/TESTGAME/agenda` with `vessel=TEST1` and `authcode=733a9f3f-debc-42a0-8c71-7da1a7debdca` and `order={"task": "burn", "args": {"a": [0, 0, 0]}, "time": "2022-12-28T19:41:38.176481"}` and `html=1`\
-Output: `Order 'burn <0.000 0.000 0.000> at 07:41 PM on Wednesday, Dec 28, 2022' successfully given to vessel TEST1.`
+Output: `Order 'burn <0.000 0.000 0.000> at 07:41 PM on Wednesday, Dec 28, 2022' successfully given to vessel TEST1 with order ID 1.`
 
+### /game/[name]/delete_order
+Remove a pending order from a vessel. Return the ID of the deleted order and how many pending orders remain.
+
+Required parameters: `vessel` `authcode` `order_id`
+
+Optional parameters: `html`
+
+Updates sim: before operation.
+
+#### Examples
+Call: `/game/[name]/delete_order` with `vessel=TEST1` and `authcode=733a9f3f-debc-42a0-8c71-7da1a7debdca` and `order_id=1`
+
+Output: `{"ok":true, "removed_id":1, "pending_count": 1}`
+
+Call: `/game/[name]/delete_order` with `vessel=TEST1` and `authcode=733a9f3f-debc-42a0-8c71-7da1a7debdca` and `order_id=1` and `html=1`
+
+Output: `Removed order #1 from vessel TEST1. 1 order(s) pending.`
