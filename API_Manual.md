@@ -19,7 +19,7 @@ All parameters are provided as POST headers, although this page lists them as GE
 All dates are expected and returned as ISO-format strings, specifically those compatible with Python's `datetime` module.\
 Other parameters are expected to be strings, or strings of valid JSON (that is, parseable by Python `json.loads()`.)
 
-Several endpoints have optional parameters in common:
+Several endpoints have parameters in common:
 param name | expected format | effect
 ---|---|---
 `html` | Boolean | Determine if JSON or pretty HTML will be returned
@@ -115,4 +115,37 @@ Output:
  
  Output:
  
- 
+ ![image](https://user-images.githubusercontent.com/89665494/209775961-4d97f043-ef56-4eab-a6f0-587ceefb0f64.png)
+
+### /game/[name]/summary
+
+List events from game start or specified range.
+Alias `/game/[name]/event_log`.
+
+Required parameters: none.
+
+Optional parameters: `html` `start` `end`
+
+#### Examples
+
+Call: `/game/TESTGAME/summary`
+
+Output:
+```
+{"ok": true, 
+"events": [
+    {"type": "defense", "args": {"defender": "TEST1", "victim": "TEST2"}, "time": "2022-12-27T18:42:58.068610", "event_id": 0}, 
+    {"type": "capture", "args": {"attacker": "TEST2", "planet": "Earth"}, "time": "2022-12-27T18:42:58.068610", "event_id": 1}, 
+    {"type": "burn", "args": {"vessel": "TEST1", "a": [1, 0, 0], "position": [647999.9999999906, 0.0, 0.0]}, "time": "2022-12-27T19:42:58.068610", "event_id": 2}
+]}
+```
+
+Call: `game/TESTGAME/summary` with `html=1` and `start=1969-12-31T18:00:00`\
+Output:
+```
+Events between 1969-12-31T18:00:00 and current time:
+Dec 27 2022, 18:42:58  [DEF] vessel TEST1 destroyed vessel TEST2
+Dec 27 2022, 18:42:58  [ATK] vessel TEST2 captured Earth
+Dec 27 2022, 19:42:58  [NAV] vessel TEST1 started burn [1, 0, 0] while at coords [648000.0, 0.0, 0.0]
+```
+
