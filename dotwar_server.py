@@ -109,11 +109,11 @@ def game_status(name, config=global_config):
 	ret["game"] = g_json
 	if ("html" in q) and valid_json(q.html) and json.loads(q.html):
 		return "<br>".join(["Game '" + name + "' status:",
-							"Created on: " + g_json["created_on"] + " (" + datetime.datetime.fromisoformat(
-								g_json["created_on"]).strftime("%b %d %Y, %X") + ")",
-							"System time: " + g_json["system_time"] + " (" + datetime.datetime.fromisoformat(
-								g_json["system_time"]).strftime("%b %d %Y, %X") + ")"
-							])
+		                    "Created on: " + g_json["created_on"] + " (" + datetime.datetime.fromisoformat(
+			                    g_json["created_on"]).strftime("%b %d %Y, %X") + ")",
+		                    "System time: " + g_json["system_time"] + " (" + datetime.datetime.fromisoformat(
+			                    g_json["system_time"]).strftime("%b %d %Y, %X") + ")"
+		                    ])
 	return ret
 
 
@@ -141,17 +141,16 @@ def scan(name):
 		page = ["<pre>NAME\tTYPE\tCAPTAIN\tPOSITION\t\tHEADING\t\t\tACCELERATION\t\tALLEGIANCE"]
 		for entity in entities:
 			desc = "&#9;".join([str(attr) for attr in
-								[
-									entity["name"],
-									entity["type"],
-									(entity["captain"] if entity["captain"] else "----"),
-									" ".join([format(value, ".3f") for value in (entity["r"])]),
-									" ".join([format(value, ".3f") for value in (entity["v"])]),
-									" ".join([format(value, ".3f") for value in (entity["a"])]),
-									["Defenders", "Attackers", "Itself"][entity["team"]]
-								]
-								]
-							   )
+			                    [entity["name"],
+			                     entity["type"],
+			                     (entity["captain"] if entity["captain"] else "----"),
+			                     " ".join([format(value, ".3f") for value in (entity["r"])]),
+			                     " ".join([format(value, ".3f") for value in (entity["v"])]),
+			                     " ".join([format(value, ".3f") for value in (entity["a"])]),
+			                     ["Defenders", "Attackers", "Itself"][entity["team"]]
+			                     ]
+			                    ]
+			                   )
 			page.append(desc)
 		page.append("</pre>")
 		return "<br/>".join(page)
@@ -193,7 +192,7 @@ def summary(name, config=global_config):
 				abbr = "  [DEF] "
 			elif event["type"] == "burn":
 				desc = ["vessel", event["args"]["vessel"], "started burn", str(event["args"]["a"]), "while at coords",
-						str([float(format(value, ".3f")) for value in event["args"]["position"]])]
+				        str([float(format(value, ".3f")) for value in event["args"]["position"]])]
 				abbr = "  [NAV] "
 			desc = abbr.join([time, " ".join(desc)])
 			page.append(desc)
@@ -225,10 +224,10 @@ def agenda(name):
 		page = ["<pre>Pending orders for vessel " + vessel["name"] + ":"]
 		for order in vessel["pending"]:
 			page.append("at {}: burn [{:.3f} {:.3f} {:.3f}] ; order ID: {}"
-						.format(order["time"].strftime("%I:%M %p on %A, %b %d, %Y"),
-								*order["args"]["a"], order["order_id"]
-								)
-						)  # formerly format "%b %d %Y, %X"
+			            .format(order["time"].strftime("%I:%M %p on %A, %b %d, %Y"),
+			                    *order["args"]["a"], order["order_id"]
+			                    )
+			            )  # formerly format "%b %d %Y, %X"
 		page = "<br>".join(page)
 		return page
 

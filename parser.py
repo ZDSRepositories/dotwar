@@ -4,21 +4,21 @@ import datetime
 class Parser:
 	# noinspection PyDefaultArgument
 	def __init__(self,
-				 keywords={
-					 "hours": {-1: int},
-					 "seconds": {-1: int},
-					 "minutes": {-1: int},
-					 "days": {-1: int},
+	             keywords={
+		             "hours": {-1: int},
+		             "seconds": {-1: int},
+		             "minutes": {-1: int},
+		             "days": {-1: int},
 
-					 "burn": {1: int, 2: int, 3: int},
-					 "agenda": {},
-					 "scan": {}
-				 },
-				 translations={"hour": "hours"},
-				 time_keywords=["seconds", "hours", "minutes", "days"],
-				 verb_keywords=["burn", "scan", "agenda"],
+		             "burn": {1: int, 2: int, 3: int},
+		             "agenda": {},
+		             "scan": {}
+	             },
+	             translations={"hour": "hours"},
+	             time_keywords=["seconds", "hours", "minutes", "days"],
+	             verb_keywords=["burn", "scan", "agenda"],
 
-				 ):
+	             ):
 		self.keywords = keywords
 		self.translations = translations
 		self.time_keywords = time_keywords
@@ -44,14 +44,14 @@ class Parser:
 			if token in self.keywords:
 				# print("found keyword:", token)
 				# start collecting arguments the keyword specifies
-				arg_indices = self.keywords[token]
-				args = []
-				for arg_index in arg_indices:
-					arg = tokens[i + int(arg_index)]
-					arg_type = arg_indices[arg_index]
+				arg_indices = self.keywords[token] #expected locations of arguments
+				args = [] # collected arguments
+				for arg_index in arg_indices: #for each expected position
+					arg = tokens[i + int(arg_index)] #collect arg
+					arg_type = arg_indices[arg_index]  # expected type of arg
 					try:
-						arg = arg_type(arg)
-						args.append(arg)
+						arg = arg_type(arg) # convert collected arg string to expected type
+						args.append(arg) # add converted arg to args
 					except ValueError:
 						raise ValueError(
 							"keyword " + token + " expected token of type " + str(arg_type) + " at index " + str(

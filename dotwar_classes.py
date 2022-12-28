@@ -200,10 +200,10 @@ class Game:
 		# update interval of constant acceleration
 		# interval should be in hours
 		print("\nSTARTING NEW UPDATE SEGMENT FROM",
-				str(self.system["game"]["system_time"]),
-				"TO", str(self.system["game"]["system_time"] + datetime.timedelta(hours=interval)),
-				(" (interval of " + str(datetime.timedelta(hours=interval)) + ")")
-				)
+		      str(self.system["game"]["system_time"]),
+		      "TO", str(self.system["game"]["system_time"] + datetime.timedelta(hours=interval)),
+		      (" (interval of " + str(datetime.timedelta(hours=interval)) + ")")
+		      )
 		time = 0  # elapsed time in seconds
 		final_delta = {}
 		for entity in self.system["entities"]:
@@ -232,18 +232,18 @@ class Game:
 				if entity_a["type"] == "craft":
 					if entity_a["team"] == 1 and entity_b["type"] == "planet" and entity_b["captured"] == False:
 						event = {"type": "capture", "args": {"attacker": entity_a["name"], "planet": entity_b["name"]},
-									"time": self.system["game"]["system_time"].isoformat()}
+						         "time": self.system["game"]["system_time"].isoformat()}
 						self.add_event(event)
 						entity_b["captured"] = True
 						print(event["args"]["attacker"], "captured planet", event["args"]["planet"], "at",
-								str(event["time"]))
+						      str(event["time"]))
 					elif entity_a["team"] == 0 and entity_b["team"] == 1:
 						event = {"type": "defense", "args": {"defender": entity_a["name"], "victim": entity_b["name"]},
-									"time": self.system["game"]["system_time"].isoformat()}
+						         "time": self.system["game"]["system_time"].isoformat()}
 						self.add_event(event)
 						self.system["entities"].remove(entity_b)
 						print(event["args"]["defender"], "destroyed vessel", event["args"]["victim"], "at",
-								str(event["time"]))
+						      str(event["time"]))
 			time += instant
 
 		self.system["game"]["system_time"] += datetime.timedelta(seconds=time)
@@ -268,7 +268,7 @@ class Game:
 				self.edit_entity(order["parent_entity"], "a", a)
 				self.add_event({'type': "burn", "args": {"vessel": order["parent_entity"], "a": order["args"]["a"],
 				                                         "position": position}, "time": order["time"].isoformat()})
-			# print("vessel", order["parent_entity"], "set new burn", order["args"], "at", str(order["time"]))
+		# print("vessel", order["parent_entity"], "set new burn", order["args"], "at", str(order["time"]))
 		# update remaining subinterval between last order and end of whole interval
 		remaining_timedelta = end_time - self.system["game"]["system_time"]
 		print("SEGMENTS DONE, REMAINING TIME", remaining_timedelta)
@@ -319,31 +319,3 @@ class Game:
 			events = self.system["event_log"]
 
 		return events
-
-
-if __name__ == "__main__":  # test code
-	g = Game("TESTGAME", "C:\\Users\\1zada\\PycharmProjects\\dotwar")
-	g.new(overwrite=True)
-	g.load()
-
-	g.add_entity("TEST1", "ADMIN", [0, 0, 0], [0, 0, 0], [0.1, 0, 0], "craft", [], 0, True)
-	g.add_entity("TEST2", "ADMIN", [10, 10, 10], [0, 0, 0], [2, 2, 2], "craft", [], 1, True)
-	g.add_entity("Earth", None, [0, 0, 0], [0, 0, 0], [0, 0, 0], "planet", [], -1)
-	g.edit_entity("Earth", "captured", False)
-	# g.save()
-	# g.load()
-
-	"""g.add_order("TEST1", task="burn", time=(g.system["game"]["system_time"] + datetime.timedelta(hours=1)), args={"a":[0.1, 0.0, 0.0]})
-	g.add_order("TEST1", task="burn", time=(g.system["game"]["system_time"] + datetime.timedelta(hours=3)), args={"a":[0.0, -0.1, 0.0]})
-	#print("pending orders:",g.get_pending())
-	#print(g.update(25))
-	g.update(25/10)"""
-	g.add_order("TEST1", "burn", {"a": [1, 0, 0]}, time=(g.system["game"]["system_time"] + datetime.timedelta(hours=1)))
-	# print("pending orders:",g.get_pending())
-	# print("TEST1 velocity:",g.get_entity("TEST1")["v"])
-	g.save()
-	# print("event log:")
-	print("Events:")
-	[print(" ", event) for event in g.system["event_log"]]
-	print("Pending orders:")
-	[print(order) for order in g.get_pending("TEST1")]

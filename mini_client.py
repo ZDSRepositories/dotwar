@@ -7,7 +7,7 @@ game_global.load()
 # print(game.system)
 
 print("Available craft:")
-[(print(e["name"]) if e["type"] == "craft" else None) for e in game_global.system["entities"]]
+[(print(e["name"]) if e["type"] == "craft" else None) for e in game.system["entities"]]
 
 vessel_name_global = input("Vessel name? ")
 
@@ -21,12 +21,12 @@ def scan(vessel_name, game):
 	for e in game.system["entities"]:
 		if e["name"] != vessel_name:
 			print(" \t".join([str(attr) for attr in
-					[e["name"],
-					e["type"],
-					e["captain"] if e["captain"] else "----",
-					e["r"],
-					e["v"],
-					e["a"]]]))
+			                  [e["name"],
+			                   e["type"],
+			                   e["captain"] if e["captain"] else "----",
+			                   e["r"],
+			                   e["v"],
+			                   e["a"]]]))
 	print("Scan complete.")
 
 
