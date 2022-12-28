@@ -37,6 +37,7 @@ def load_config(directory=sys.path[0]):
             "server_port": 80,
             "dir": directory,
             "game_dir": directory,
+            "debug":True,
             "welcome": "Welcome to the myrmidon/dotwar test server!"
         }
 
@@ -123,7 +124,7 @@ def scan(name):
         return {"ok": False, "msg": "invalid JSON provided in 'filter'"}
 
     if ("html" in request.query) and valid_json(request.query.html) and json.loads(request.query.html):
-        page = ["<pre>NAME\tTYPE\tCAPTAIN\tPOSITION\t\tHEADING\t\t\tACCELERATION"]
+        page = ["<pre>NAME\tTYPE\tCAPTAIN\tPOSITION\t\tHEADING\t\t\tACCELERATION\t\tALLEGIANCE"]
         for entity in entities:
             desc = "&#9;".join([str(attr) for attr in
                                 [entity["name"],
@@ -131,7 +132,11 @@ def scan(name):
                                  (entity["captain"] if entity["captain"] else "----"),
                                  " ".join([format(value, ".3f") for value in (entity["r"])]),
                                  " ".join([format(value, ".3f") for value in (entity["v"])]),
-                                 " ".join([format(value, ".3f") for value in (entity["a"])])]])
+                                 " ".join([format(value, ".3f") for value in (entity["a"])]),
+                                 ["Defenders", "Attackers", "Itself"][entity["team"]]
+                                 ]
+                                ]
+                               )
             page.append(desc)
         page.append("</pre>")
         return "<br/>".join(page)
@@ -262,5 +267,12 @@ def update_to_now(name):
     print("simulation updated to " + new.isoformat() + ",delta of {}".format(new - old))
 
 
-print(get_game_list())
-run(host=config["server_addr"], port=config["server_port"], debug=True)
+print("[INFO] Detected games:", get_game_list())
+print("[INFO] __name__ at startup:", __name__)
+application = bottle.default_app()
+print("[INFO] Created default_app")
+if __name__ == "__main__":
+    print("[INFO] Starting dev server on", config["server_addr"], config["server_port"], "with debug", ["disabled", "enabled"][config["debug"]] + "...")
+    run(app=application, host=config["server_addr"], port=config["server_port"], debug=config["debug"])
+else:
+    print("[INFO] Not in __main__, continuing with default_app only instantiated")
