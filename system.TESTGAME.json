@@ -1,97 +1,96 @@
 {
-  "game": {
-    "name": "TESTGAME",
-    "created_on": "2022-12-27T22:19:05.978619",
-    "last_modified": "2022-12-27T22:19:05.978619",
-    "system_time": "2022-12-27T22:19:05.980617"
-  },
-  "entities": [
-    {
-      "name": "TEST1",
-      "captain": "ADMIN",
-      "r": [
-        0,
-        0,
-        0
-      ],
-      "v": [
-        0,
-        0,
-        0
-      ],
-      "a": [
-        0.1,
-        0.0,
-        0.0
-      ],
-      "type": "craft",
-      "pending": [
+    "game": {
+        "name": "TESTGAME",
+        "created_on": "2022-12-27T22:19:05.978619",
+        "last_modified": "2022-12-27T22:19:05.978619",
+        "system_time": "2022-12-28T00:10:19.980617"
+    },
+    "entities": [
         {
-          "task": "burn",
-          "args": {
+            "name": "TEST1",
+            "captain": "ADMIN",
+            "r": [
+                6479377.999999991,
+                0.0,
+                0.0
+            ],
+            "v": [
+                3434.0000000000136,
+                0.0,
+                0.0
+            ],
             "a": [
-              1,
-              0,
-              0
-            ]
-          },
-          "time": "2022-12-27T23:19:05.980617",
-          "order_id": 0,
-          "parent_entity": "TEST1"
+                1,
+                0,
+                0
+            ],
+            "type": "craft",
+            "pending": [],
+            "team": 0,
+            "created_on": "2022-12-27T22:19:05.985916",
+            "authcode": "b7049805-8560-4f25-9e20-9f76b66c2cfc"
+        },
+        {
+            "name": "Earth",
+            "captain": null,
+            "r": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "v": [
+                0,
+                0,
+                0
+            ],
+            "a": [
+                0,
+                0,
+                0
+            ],
+            "type": "planet",
+            "pending": [],
+            "team": -1,
+            "created_on": "2022-12-27T22:19:05.985916",
+            "captured": true
         }
-      ],
-      "team": 0,
-      "created_on": "2022-12-27T22:19:05.985916",
-      "authcode": "b7049805-8560-4f25-9e20-9f76b66c2cfc"
-    },
-    {
-      "name": "TEST2",
-      "captain": "ADMIN",
-      "r": [
-        10,
-        10,
-        10
-      ],
-      "v": [
-        0,
-        0,
-        0
-      ],
-      "a": [
-        2,
-        2,
-        2
-      ],
-      "type": "craft",
-      "pending": [],
-      "team": 1,
-      "created_on": "2022-12-27T22:19:05.985916",
-      "authcode": "aa3559bb-8b80-4455-bb01-6b6147891c07"
-    },
-    {
-      "name": "Earth",
-      "captain": null,
-      "r": [
-        0,
-        0,
-        0
-      ],
-      "v": [
-        0,
-        0,
-        0
-      ],
-      "a": [
-        0,
-        0,
-        0
-      ],
-      "type": "planet",
-      "pending": [],
-      "team": -1,
-      "created_on": "2022-12-27T22:19:05.985916",
-      "captured": false
-    }
-  ],
-  "event_log": []
+    ],
+    "event_log": [
+        {
+            "type": "defense",
+            "args": {
+                "defender": "TEST1",
+                "victim": "TEST2"
+            },
+            "time": "2022-12-27T22:19:05.980617",
+            "event_id": 0
+        },
+        {
+            "type": "capture",
+            "args": {
+                "attacker": "TEST2",
+                "planet": "Earth"
+            },
+            "time": "2022-12-27T22:19:05.980617",
+            "event_id": 1
+        },
+        {
+            "type": "burn",
+            "args": {
+                "vessel": "TEST1",
+                "a": [
+                    1,
+                    0,
+                    0
+                ],
+                "position": [
+                    647999.9999999906,
+                    0.0,
+                    0.0
+                ]
+            },
+            "time": "2022-12-27T23:19:05.980617",
+            "event_id": 2
+        }
+    ]
 }

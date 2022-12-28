@@ -138,6 +138,32 @@ def scan(name):
 		return {"ok": False, "msg": "invalid JSON provided in 'filter'"}
 
 	if ("html" in request.query) and valid_json(request.query.html) and json.loads(request.query.html):
+		rows = [[entity["name"], entity["type"], (entity["captain"] if entity["captain"] else "----"),
+			                     f"<{entity['r'][0]:.3f} {entity['r'][1]:.3f} {entity['r'][2]:.3f}>",
+			                     f"<{entity['v'][0]:.3f} {entity['v'][1]:.3f} {entity['v'][2]:.3f}>",
+			                     f"<{entity['a'][0]:.3f} {entity['a'][1]:.3f} {entity['a'][2]:.3f}>",
+			                     ["Defenders", "Attackers", "Itself"][entity["team"]]
+			                     ] for entity in entities]
+		table = generate_table(["NAME","TYPE","CAPTAIN","POSITION","HEADING","ACCELERATION","ALLEGIANCE"], rows)
+		style_tag = """<style>
+table {
+  font-family: Courier, sans-serif;
+  border-collapse: collapse;
+}
+
+td, th {
+  font-size: 14px;
+  border: 1px solid #000000;
+  text-align: center;
+  padding: 4px;
+}
+
+tr:nth-child(even) {
+  background-color: #dddddd;
+}
+</style>"""
+		page = style_tag+table
+		"""
 		page = ["<pre>NAME\tTYPE\tCAPTAIN\tPOSITION\t\tHEADING\t\t\tACCELERATION\t\tALLEGIANCE"]
 		for entity in entities:
 			desc = "&#9;".join([str(attr) for attr in
@@ -153,7 +179,8 @@ def scan(name):
 			                   )
 			page.append(desc)
 		page.append("</pre>")
-		return "<br/>".join(page)
+		"""
+		return page
 	elif ("html" in request.query) and not valid_json(request.query.html):
 		return {"ok": False, "msg": "invalid JSON provided in 'html'"}
 	else:
