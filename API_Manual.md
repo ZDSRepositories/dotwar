@@ -19,6 +19,13 @@ All parameters are provided as POST headers, although this page lists them as GE
 All dates are expected and returned as ISO-format strings, specifically those compatible with Python's `datetime` module.\
 Other parameters are expected to be strings, or strings of valid JSON (that is, parseable by Python `json.loads()`.)
 
+Several endpoints have optional parameters in common.
+param name | expected format | effect
+---|---|---
+`html` | Boolean | Determine if JSON or pretty HTML will be returned
+`filters` | JSON object | Only return entries in list whose key-value pairs match those in `filters`
+`authcode` | UUID4 string | Unique vessel authcode required for vessel operations
+
 
 
 ## Endpoints
