@@ -147,7 +147,7 @@ def scan(name):
 		table = generate_table(["NAME","TYPE","CAPTAIN","POSITION","HEADING","ACCELERATION","ALLEGIANCE"], rows)
 		style_tag = """<style>
 table {
-  font-family: Courier, sans-serif;
+  font-family: Roboto, sans-serif;
   border-collapse: collapse;
 }
 
