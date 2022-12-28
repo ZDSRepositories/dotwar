@@ -4,21 +4,21 @@ import datetime
 class Parser:
 	# noinspection PyDefaultArgument
 	def __init__(self,
-				 keywords={
-					 "hours": {-1: int},
-					 "seconds": {-1: int},
-					 "minutes": {-1: int},
-					 "days": {-1: int},
+	             keywords={
+		             "hours": {-1: int},
+		             "seconds": {-1: int},
+		             "minutes": {-1: int},
+		             "days": {-1: int},
 
-					 "burn": {1: int, 2: int, 3: int},
-					 "agenda": {},
-					 "scan": {}
-				 },
-				 translations={"hour": "hours"},
-				 time_keywords=["seconds", "hours", "minutes", "days"],
-				 verb_keywords=["burn", "scan", "agenda"],
+		             "burn": {1: int, 2: int, 3: int},
+		             "agenda": {},
+		             "scan": {}
+	             },
+	             translations={"hour": "hours"},
+	             time_keywords=["seconds", "hours", "minutes", "days"],
+	             verb_keywords=["burn", "scan", "agenda"],
 
-				 ):
+	             ):
 		self.keywords = keywords
 		self.translations = translations
 		self.time_keywords = time_keywords
