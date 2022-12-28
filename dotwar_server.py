@@ -37,7 +37,7 @@ def load_config(directory=sys.path[0]):
             "server_port": 80,
             "dir": directory,
             "game_dir": directory,
-            "debug":True,
+            "debug": True,
             "welcome": "Welcome to the myrmidon/dotwar test server!"
         }
 
@@ -66,19 +66,19 @@ def valid_datetime(iso_string):
         return False
     return True
 
+
 def generate_table(headers, data_rows):
     # headers: list of table headers.
     # data_rows: list of rows of the table, each row a list of individual elements
     table_rows = []
-    table_rows.append("<tr>"+("".join(["<th>"+header+"</th>" for header in headers]))+"</tr>")
+    table_rows.append("<tr>" + ("".join(["<th>" + header + "</th>" for header in headers])) + "</tr>")
     for data_row in data_rows:
         table_rows.append(
-            "<tr>"+ (
-                "".join(["<td>"+element+"</td>" for element in data_row])
+            "<pre>" + (
+                "".join(["<td>" + element + "</td>" for element in data_row])
             ) + "</tr>"
         )
-
-    return "<table>"+"".join(table_rows)+"</table>"
+    return "<table>" + "".join(table_rows) + "</table>"
 
 
 config = load_config(sys.path[0])
@@ -93,7 +93,7 @@ def hello_world(config=config):
 @route('/games')
 def games():
     game_list = get_game_list()
-    return {"ok": True, "games":game_list}
+    return {"ok": True, "games": game_list}
 
 
 @route('/game/<name>')
@@ -168,7 +168,7 @@ def summary(name, config=config):
     q = request.query
     q.start, q.end = q.start.strip(), q.end.strip()
     start = datetime.datetime.fromisoformat(q.start) if (
-                q.start and valid_json(q.start)) else datetime.datetime.fromtimestamp(0)  # the epoch
+            q.start and valid_json(q.start)) else datetime.datetime.fromtimestamp(0)  # the epoch
     end = datetime.datetime.fromisoformat(q.end) if (q.end and valid_datetime(q.end)) else g.system["game"][
         "system_time"]
 
@@ -266,15 +266,15 @@ def add_order(name):
         order["time"] = datetime.datetime.now()
     g.add_order(q.vessel, task=order["task"], args=order["args"], time=order["time"])
     g.save()
-    return {"ok":True, "msg":"order "+str(order)+" successfully given to vessel "+ q.vessel}
+    return {"ok": True, "msg": "order " + str(order) + " successfully given to vessel " + q.vessel}
 
 
-#@route("/game/<name>/update_simulation_debug")
+# @route("/game/<name>/update_simulation_debug")
 def update_to_now(name):
     g = dotwar_classes.Game(name, config["game_dir"])
     old = g.system_time()
     now = datetime.datetime.now()
-    print("simulation will be updated from {} to {}, delta of {}".format(old, now, (now - old)),"...")
+    print("simulation will be updated from {} to {}, delta of {}".format(old, now, (now - old)), "...")
     g.update_to(now)
     new = g.system_time()
     g.save()
@@ -287,7 +287,8 @@ application = bottle.default_app()
 print("[INFO] Created default_app")
 
 if __name__ == "__main__":
-    print("[INFO] Starting dev server on", config["server_addr"], config["server_port"], "with debug", ["disabled", "enabled"][config["debug"]] + "...")
+    print("[INFO] Starting dev server on", config["server_addr"], config["server_port"], "with debug",
+          ["disabled", "enabled"][config["debug"]] + "...")
     run(app=application, host=config["server_addr"], port=config["server_port"], debug=config["debug"])
 else:
     print("[INFO] Not in __main__, continuing with default_app only instantiated")
