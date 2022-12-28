@@ -23,7 +23,7 @@ Several endpoints have optional parameters in common:
 param name | expected format | effect
 ---|---|---
 `html` | Boolean | Determine if JSON or pretty HTML will be returned
-`filters` | JSON object | Only return entries in list whose key-value pairs match those in `filters`
+`filter` | JSON object | Only return entries in list whose key-value pairs match those in `filter`
 `authcode` | UUID4 string | Unique vessel authcode required for vessel operations
 
 
@@ -85,3 +85,34 @@ Game 'TESTGAME' status:
 Created on: 2022-12-16T11:24:18.194421 (Dec 16 2022, 11:24:18)
 System time: 2022-12-22T17:41:55.194421 (Dec 22 2022, 17:41:55)
 ```
+
+### /game/[name]/scan
+Lists the position, heading, acceleration, and other public properties of each object in the system.
+
+Required parameters: none.
+
+Optional parameters: `html` `filter`
+
+#### Examples:
+
+Call: `/game/TESTGAME/scan`
+
+Output: 
+    
+    {"ok": true,
+    "entities": [
+        {"name": "TEST1", 
+        "captain": "ADMIN", 
+        "r": [923492884.5, 0.0, 0.0], 
+        "v": [42963.000000000015, 0.0, 0.0], 
+        "a": [1, 0, 0], 
+        "type": "craft", 
+        "team": 0, 
+        "created_on": "2022-12-27T18:42:58.073688"}
+     ]}
+ 
+ Call: `/game/TESTGAME/scan` with `html=1`
+ 
+ Output:
+ 
+ 
