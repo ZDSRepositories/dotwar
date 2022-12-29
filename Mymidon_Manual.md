@@ -26,7 +26,7 @@ These numbers are slightly modified from the myrmidon '75 manual by Ward Cunning
 #### Controlling and monitoring your ship
 The parser recognizes two types of commands. *Orders*, which affect the ship, are added to a ship's pending orders, and carried out at a certain time. *Requests* are requests for data on the ship or its environment, and return a report immediately.
 
-Only orders require a time or time interval to be specified in the command. Times specified in other commands will be ignored. If a time isn't specified in an order, the current real-life time is used.
+Orders require a time or time interval to be specified in the command. Times specified in other commands will be ignored. If a time isn't specified in an order, the current real-life time is used.
 
 Orders:
 - burn *x y z*
