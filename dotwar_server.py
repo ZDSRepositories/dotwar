@@ -300,13 +300,13 @@ def add_order(name):
 
 # @route("/game/<name>/update_simulation_debug")
 def update_to_now(name):
-	g = dotwar_classes.Game(name, global_config["game_dir"])
-	old = g.system_time()
+	game = dotwar_classes.Game(name, global_config["game_dir"])
+	old = game.system_time()
 	now = datetime.datetime.now()
 	print("simulation will be updated from {} to {}, delta of {}".format(old, now, (now - old)), "...")
-	g.update_to(now)
-	new = g.system_time()
-	g.save()
+	game.update_to(now)
+	new = game.system_time()
+	game.save()
 	print("simulation updated to " + new.isoformat() + ",delta of {}".format(new - old))
 
 
