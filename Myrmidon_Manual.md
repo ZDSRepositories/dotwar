@@ -54,4 +54,4 @@ Time intervals are recognized by the keywords `minutes`, `hours`, and `days`. Ex
 Each command is a single line of text.
 Words in a command are separated by spaces. The parser counts commas, periods, and other clause punctuation as part of the word, so you probably want to avoid them.
 
-A command may only have a single verb. The verb can appear anywhere in the command as long as any other details it expects are in the right place.
+A command may only have a single verb. The verb can appear anywhere in the command, as long as any other details it expects are in the right place.
