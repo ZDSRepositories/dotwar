@@ -12,16 +12,16 @@ The defenders' goal is to eliminate all attackers. An attacker is instantly dest
 If all attackers are eliminated, the defenders win.\
 These numbers are slightly modified from the myrmidon '75 manual by Ward Cunningham. They are subject to tweaking :)
 
-### Conventions and Constraints
-All dimensions are in terms of kilometers, hours, kilometers/hour, or combinations of these.\
-No vessel can accelerate with a greater magnitude than 1.6e7 km/hr/hr. Accelerations will automatically be snipped to this amount.\
-Vessels can travel at speeds up to approximately lightspeed, specifically 1079251200 km/hr, and velocities will automatically be snipped to this amount.
-
 ### Control and Movement
 Objects in the system move "in real time", according to simple Newtonian kinematics of constant acceleration.\
 You control your vessel by adding orders to it. These orders will be carried out at a given time and will change the ship's acceleration.
 In fact, this is the only order you can give your ship. When the order is carried out, your ship's engines will begin to accelerate as ordered, 
 instantly setting the ship's acceleration to the given vector.
+
+### Conventions and Constraints
+All dimensions are in terms of kilometers, hours, kilometers/hour, or combinations of these.\
+No vessel can accelerate with a greater magnitude than 1.6e7 km/hr/hr. Accelerations will automatically be snipped to this amount.\
+Vessels can travel at speeds up to approximately lightspeed, specifically 1079251200 km/hr, and velocities will automatically be snipped to this amount.
 
 ### Commands
 #### Controlling and monitoring your ship
