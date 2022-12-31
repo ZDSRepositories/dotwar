@@ -32,8 +32,8 @@ class Game:
 		self.system_filename = "system." + self.name + ".json"
 		self.full_path = os.path.join(self.system_path, self.system_filename)
 		self.system = {"game": {"name": self.name, "created_on": datetime.datetime.now(),
-								"last_modified": datetime.datetime.now(),
-								"system_time": datetime.datetime.now()}, "entities": [], "event_log": []}
+		                        "last_modified": datetime.datetime.now(),
+		                        "system_time": datetime.datetime.now()}, "entities": [], "event_log": []}
 		# self.system_time = datetime.datetime.now()
 		self.ENCOUNTER_RADIUS = 1.6e7  # kilometers
 		self.MAX_INSTANT_ACC = 1.6e7  # km/hr/hr
@@ -60,7 +60,7 @@ class Game:
 			system_file = open(self.full_path, "w")
 			fresh_json = {
 				"game": {"name": self.name, "created_on": start.isoformat(), "last_modified": start.isoformat(),
-						 "system_time": datetime.datetime.now().isoformat()}, "entities": [], "event_log": []}
+				         "system_time": datetime.datetime.now().isoformat()}, "entities": [], "event_log": []}
 			json.dump(fresh_json, system_file)
 			system_file.close()
 
@@ -124,8 +124,8 @@ class Game:
 		if name in [entity["name"] for entity in self.system["entities"]]:
 			return False
 		entity = {"name": name, "captain": captain_name, "r": np.array(r), "v": np.array(v), "a": np.array(a),
-				  "type": entity_type,
-				  "pending": pending, "team": team, "created_on": datetime.datetime.now().isoformat()}
+		          "type": entity_type,
+		          "pending": pending, "team": team, "created_on": datetime.datetime.now().isoformat()}
 		if new_authcode: entity["authcode"] = str(uuid.uuid4())
 		self.system["entities"].append(entity)
 		# print(json.dumps(self.system, indent=4))
@@ -171,9 +171,14 @@ class Game:
 		self.edit_entity(entity_name, "pending", [])
 
 	def get_order(self, entity_name, order_id):
+		if type(order_id) != int: raise TypeError("order_id must be integer")
 		for order in self.get_entity(entity_name)["pending"]:
+			print("testing order ", order["order_id"])
 			if order["order_id"] == order_id:
+				print("found match")
 				return order
+			print("...not match")
+
 
 	def get_orders_by_time(self, start, end):
 		orders = []
@@ -183,12 +188,18 @@ class Game:
 		print("UNSORTED ORDER TIMES:", [str(order["time"]) for order in orders])
 		return orders
 
+
 	def clear_order(self, entity_name, order_id):
-		self.get_entity(entity_name)["pending"].remove(self.get_order(entity_name, order_id))
+		pending = self.get_pending(entity_name)
+		valid = list(filter(lambda o: o["order_id"] != order_id, pending))
+		#print(valid)
+		self.edit_entity(entity_name, "pending", valid)
+
 
 	def sort_orders(self, orders):
 		orders.sort(key=lambda o: o["time"])
 		return orders
+
 
 	def motion(self, entity_name, dt):
 		entity = self.get_entity(entity_name)
@@ -198,14 +209,15 @@ class Game:
 		dv = a * dt
 		return [dr, dv]
 
+
 	def update_interval(self, interval):
 		# update interval of constant acceleration
 		# interval should be in hours
 		print("\nSTARTING NEW UPDATE SEGMENT FROM",
-			  str(self.system["game"]["system_time"]),
-			  "TO", str(self.system["game"]["system_time"] + datetime.timedelta(hours=interval)),
-			  (" (interval of " + str(datetime.timedelta(hours=interval)) + ")")
-			  )
+		      str(self.system["game"]["system_time"]),
+		      "TO", str(self.system["game"]["system_time"] + datetime.timedelta(hours=interval)),
+		      (" (interval of " + str(datetime.timedelta(hours=interval)) + ")")
+		      )
 		time = 0  # elapsed time in seconds
 		collisions = []
 		instant = self.SIM_TICK  # time per tick in seconds
@@ -232,29 +244,30 @@ class Game:
 				if entity_a["type"] == "craft":
 					if entity_a["team"] == 1 and entity_b["type"] == "planet" and entity_b["captured"] is False:
 						event = {"type": "capture", "args": {"attacker": entity_a["name"], "planet": entity_b["name"]},
-								 "time": self.system["game"]["system_time"].isoformat()}
+						         "time": self.system["game"]["system_time"].isoformat()}
 						self.add_event(event)
 						entity_b["captured"] = True
 						print(event["args"]["attacker"], "captured planet", event["args"]["planet"], "at",
-							  str(event["time"]))
+						      str(event["time"]))
 					elif entity_a["team"] == 0 and entity_b["team"] == 1:
 						event = {"type": "defense", "args": {"defender": entity_a["name"], "victim": entity_b["name"]},
-								 "time": self.system["game"]["system_time"].isoformat()}
+						         "time": self.system["game"]["system_time"].isoformat()}
 						self.add_event(event)
 						self.system["entities"].remove(entity_b)
 						print(event["args"]["defender"], "destroyed vessel", event["args"]["victim"], "at",
-							  str(event["time"]))
+						      str(event["time"]))
 			time += instant
 
 		self.system["game"]["system_time"] += datetime.timedelta(seconds=time)
 		print("ENDING SEGMENT AT SYSTEM TIME", str(self.system_time()))
+
 
 	def update(self, interval):
 		# update over period of time (interval, in hours), including orders and changes in acceleration.
 		# collect orders in interval, and sort
 		end_time = self.system["game"]["system_time"] + datetime.timedelta(hours=interval)
 		orders = self.get_orders_by_time(self.system["game"]["system_time"],
-										 self.system["game"]["system_time"] + datetime.timedelta(hours=interval))
+		                                 self.system["game"]["system_time"] + datetime.timedelta(hours=interval))
 		orders = self.sort_orders(orders)
 		# print("SORTED ORDER TIMES:", [str(order["time"]) for order in orders])
 		# self.update_interval for each interval
@@ -267,7 +280,7 @@ class Game:
 				position = self.get_entity(order["parent_entity"])["r"].tolist()
 				self.edit_entity(order["parent_entity"], "a", a)
 				self.add_event({'type': "burn", "args": {"vessel": order["parent_entity"], "a": order["args"]["a"],
-														 "position": position}, "time": order["time"].isoformat()})
+				                                         "position": position}, "time": order["time"].isoformat()})
 		# print("vessel", order["parent_entity"], "set new burn", order["args"], "at", str(order["time"]))
 		# update remaining subinterval between last order and end of whole interval
 		remaining_timedelta = end_time - self.system["game"]["system_time"]
@@ -279,12 +292,14 @@ class Game:
 			self.clear_order(order["parent_entity"], order["order_id"])
 		return
 
+
 	def update_to(self, end_date):
 		# end_date: datetime
 		now = self.system["game"]["system_time"]
 		interval = ((end_date - now).total_seconds()) / 3600
 		print("updating to", end_date, "with interval of", interval, "hours")
 		self.update(interval)
+
 
 	def test_collisions(self, radius):
 		collisions = []
@@ -296,6 +311,7 @@ class Game:
 
 		return collisions
 
+
 	def add_event(self, event):
 		# event = {"type":burn|defense|capture, "args":{keys to entities or coords}, "time":ISO time string}
 		if self.system["event_log"]:
@@ -304,6 +320,7 @@ class Game:
 		else:
 			event["event_id"] = 0
 		self.system["event_log"].append(event)
+
 
 	def event_log(self, start: datetime.datetime, end: datetime.datetime):
 		end = end if end else self.system["game"]["system_time"]

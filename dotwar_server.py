@@ -20,7 +20,6 @@ Implemented endpoints:
  /add_order?vessel=&authcode=&order={"task":"burn","args":{"a":[3d acceleration]}},"time":ISO date string}
 To do:
  /game/<name>/delete_order?vessel=&authcode=&order_id=
- /parse?query=
  /play/<name> returns the client, setup for the specified game 
  Convert all endpoints from GET to POST
  
@@ -300,6 +299,35 @@ def add_order(name):
 		return f"Order <code>{order['task']} {order['args']} at {order['time']:%I:%M %p on %A, %b %d, %Y}</code> given to vessel {q.vessel} with order ID {order_id}."
 	else:
 		return {"ok": True, "vessel":q.vessel, "added_id": order_id}
+
+@route("/game/<name>/delete_order", method="POST")
+def delete_order(name):
+	# required keys: vessel, order_id, authcode
+	# optional keys: html
+	q = request.POST
+
+	#print("in delete_order, headers =", dict(q))
+	html= False
+	if "html" in q:
+		html = bool(json.loads(q.html))
+	if not ("vessel" in q and "authcode" in q and "order_id" in q):
+		return {"ok":False, "msg":"vessel, order_id, and authcode are required"}
+	if not type(q.order_id):
+		return {"ok":False, "msg":"order_id must be an integer"}
+	order_id = json.loads(q.order_id)
+	g = dotwar_classes.Game(name, global_config["game_dir"])
+	vessel = g.get_entity(q.vessel)
+	if not vessel: return {"ok":False, "msg":"vessel "+q.vessel+" doesn't exist"}
+	if not vessel["authcode"] == q.authcode : return {"ok": False, "msg":f"not authorized. {q.authcode} is not this vessel's authcode"}
+	if not g.get_order(q.vessel, order_id): return {"ok":False, "msg": f"no pending order #{q.order_id} for vessel {q.vessel}"}
+	# all tests passed:
+	g.clear_order(q.vessel, order_id)
+	pending_count = len(g.get_pending(q.vessel))
+	g.save()
+	if not html:
+		return {"ok":True, "removed_id":order_id, "pending_count": pending_count}
+	else:
+		return f"Removed order with ID {order_id} from vessel {q.vessel}. {pending_count} order(s) pending."
 
 
 # @route("/game/<name>/update_simulation_debug")
