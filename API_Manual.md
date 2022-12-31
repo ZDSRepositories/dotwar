@@ -8,7 +8,8 @@ All endpoints are given as partial URLs to be appended to the web address of a d
 
 For example, endpoint "/games" on server dotwar.pythonanywhere.com would be called by sending a request "dotwar.pythonanywhere.com/games".
 
-All endpoints expect POST requests and will error if a different method is used.
+All endpoints expect POST requests and will error if a different method is used.\
+Some routes are not part of the API per se and will be requested by browsers, so they will use GET.
 
 All key-value pairs that are parameters for an endpoint are to be provided as POST headers.
 
@@ -29,9 +30,6 @@ param name | expected format | effect
 
 
 ## Endpoints
-
-### /
-Provides HTML page with the server's welcome message and list of games.
 
 ### /games
 
@@ -226,3 +224,12 @@ Output: `{"ok":true, "removed_id":1, "pending_count": 1}`
 Call: `/game/[name]/delete_order` with `vessel=TEST1` and `authcode=733a9f3f-debc-42a0-8c71-7da1a7debdca` and `order_id=1` and `html=1`
 
 Output: `Removed order with ID 1 from vessel TEST1. 1 order(s) pending.`
+
+## Other Routes
+These routes are intended for browsers, and respond to HTTP GET requests.
+
+### /
+Provides HTML page with the server's welcome message and list of games.
+
+### /play/<name>
+Provides an instance of the JS client, preset for the provided game name. Returns 404 if there is no game by that name.
