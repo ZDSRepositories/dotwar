@@ -5,24 +5,27 @@ class Parser:
 	# noinspection PyDefaultArgument
 	def __init__(self,
 	             keywords={
-		             "hours": {-1: int},
-		             "seconds": {-1: int},
-		             "minutes": {-1: int},
-		             "days": {-1: int},
+		             "hours": {-1: float},
+		             "seconds": {-1: float},
+		             "minutes": {-1: float},
+		             "days": {-1: float},
 
-		             "burn": {1: int, 2: int, 3: int},
+		             "at":{1:str, 2:str},
+
+		             "burn": {1: float, 2: float, 3: float},
 		             "agenda": {},
 		             "scan": {}
 	             },
 	             translations={"hour": "hours"},
 	             time_keywords=["seconds", "hours", "minutes", "days"],
 	             verb_keywords=["burn", "scan", "agenda"],
-
+	             command_signatures=[{"verb":"VERB_BURN", "required_items":[["INTERVAL", "DATE"]], "required_context":["authcode"]}]
 	             ):
 		self.keywords = keywords
 		self.translations = translations
 		self.time_keywords = time_keywords
 		self.verb_keywords = verb_keywords
+		self.command_signatures = command_signatures
 
 	def tokenify(self, input_string):
 		tokens = input_string.split()  # example: "in 2 hours burn 0 0 0"
@@ -68,21 +71,65 @@ class Parser:
 		item_types = ["INTERVAL", "DATE", "NAME", "VERB_BURN", "VERB_AGENDA", "VERB_SCAN", "VERB_SUMMARY"]
 		items = []
 		for phrase in phrases:
+			print("testing phrase", phrase)
 			if phrase[0] in self.time_keywords:
-				# print("found time phrase:", phrase[0])
+				print("found time phrase:", phrase[0])
 				delta = datetime.timedelta(**{phrase[0]: phrase[1][0]})
 				items.append(["INTERVAL", delta])
 			elif phrase[0] in self.verb_keywords:
 				# print("found verb phrase:", phrase[0])
 				items.append(["VERB_" + phrase[0].upper(), *phrase[1:]])
-			break
+			elif phrase[0] == "at":
+				items.append(
+					["DATE",
+					 datetime.datetime.strptime(" ".join(phrase[1]), "%Y-%m-%d %H:%M")]
+				)
 		return items
 
+	# take list of items and determine what command it matches,
+	# classifying it based on verb.
+	# return a representation of the command: a verb and relevant items
+	# i.e {"verb":"burn", "interval":timedelta, "a":[0,0,0], "missing_headers":["authcode", "time"]}
+	# or  {"verb":"burn", "time":datetime, "a":[0,0,0], "missing_headers":["authcode"]}
 	def classify(self, input_string=None, items=None):
 		if items is None:
 			items = self.itemify(input_string=input_string)
+		verb = None
+		signature = None
+		item_labels = [item[0] for item in items]
+		item_contents = [item[1] for item in items]
+		for signature_candidate in self.command_signatures:
+			if signature_candidate["verb"] in item_labels:
+				signature = signature_candidate
+				break
+		verb = signature["verb"]
+
+		for required_item in signature["required_items"]:
+			print("searching in", [e[0] for e in filter(lambda i: (i[0]==required_item or i[0] in required_item), items)])
+			if not [e[0] for e in filter(lambda i: (i[0]==required_item or i[0] in required_item), items)]:
+				raise Exception(f"signature for {verb} expected {required_item}")
+
+		if verb == "VERB_BURN":
+			if "DATE" in item_labels:
+				time = None
+				item = list(filter(lambda i: i[0]=="TIME", items))[0]
+				return {"endpoint":"/add_order",
+				        "headers":{"time":time.isoformat()},
+				        "incomplete_headers":["vessel", "authcode"]
+				        }
+			elif "INTERVAL" in item_labels:
+				return {"endpoint": "/add_order",
+				        "headers": {},
+				        "incomplete_headers": ["vessel", "authcode", "time"],
+				        "context":{}
+				        }
+
+
 
 
 parser_global = Parser()
 input_string_global = input("command vessel> ")
-print(parser_global.itemify(input_string=input_string_global))
+print("tokens:", parser_global.tokenify(input_string=input_string_global))
+print("phrases:", parser_global.phrasify(input_string=input_string_global))
+print("items:", parser_global.itemify(input_string=input_string_global))
+print("result:", parser_global.classify(input_string=input_string_global))

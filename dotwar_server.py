@@ -287,9 +287,13 @@ def add_order(name):
 		return {"ok": False, "msg": "Invalid JSON in order.", "input": q.order}
 
 	allowed_keys = ["task", "args", "time"]
-	if not "time" in order:
+	if "time" in order and valid_json(order["time"]) and valid_datetime(order["time"]):
+		order["time"] = datetime.datetime.fromisoformat(order["time"])
+	elif "interval" in order and type(order["interval"] in [int, float]):
+		order["time"] = datetime.datetime.now() + datetime.timedelta(seconds = order["interval"])
+	else:
 		order["time"] = datetime.datetime.now()
-	order["time"] = datetime.datetime.fromisoformat(order["time"]) if type(order["time"]) == str else order["time"]
+
 	order_id = g.add_order(q.vessel, task=order["task"], args=order["args"], time=order["time"])
 	g.save()
 	if "html" in q and valid_json(q.html) and json.loads(q.html):
