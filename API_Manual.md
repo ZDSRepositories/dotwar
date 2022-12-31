@@ -231,5 +231,5 @@ These routes are intended for browsers, and respond to HTTP GET requests.
 ### /
 Provides HTML page with the server's welcome message and list of games.
 
-### /play/<name>
+### /play/[name]
 Provides an instance of the JS client, preset for the provided game name. Returns 404 if there is no game by that name.
