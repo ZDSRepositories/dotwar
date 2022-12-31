@@ -49,7 +49,7 @@ Requests:
 - `agenda` lists the pending orders for your vessel.
 
 #### Details
-Time intervals are recognized by the keywords `minutes`, `hours`, and `days`. Exact dates must follow the keyword `at`. Exact dates must be written as *year-month-day hour:minute*, all integers, with no zero-padding and in 24-hour time. For example, 3pm on January 1, 2022 would be `at 2022-1-1 15:00`. This will hopefully be made more flexible in the future.
+Time intervals are recognized by the keywords `minutes`, `hours`, and `days`. Exact dates must follow the keyword `at`. Exact dates must be written as *year-month-day hour:minute*, all integers, with zero-padding and in 24-hour time. For example, 3pm on January 1, 2022 would be `at 2022-01-01 15:00`. This will hopefully be made more flexible in the future.
 
 Each command is a single line of text.
 Words in a command are separated by spaces. The parser counts commas, periods, and other clause punctuation as part of the word, so you probably want to avoid them.
