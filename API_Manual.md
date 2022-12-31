@@ -22,7 +22,7 @@ Other parameters are expected to be strings, or strings of valid JSON (that is, 
 Several endpoints have parameters in common:
 param name | expected format | effect
 ---|---|---
-`html` | Boolean | Determine if JSON or pretty HTML will be returned
+`html` | Boolean | Determine if JSON or pretty HTML will be returned on successful operation
 `filter` | JSON object | Only return entries in list whose key-value pairs match those in `filter`
 `authcode` | UUID4 string | Unique vessel authcode required for vessel operations
 
@@ -190,7 +190,8 @@ at 02:52 AM on Wednesday, Dec 28, 2022: burn [1.000 0.000 0.000] ; order ID: 0
 
 ### /game/[name]/add_order
 Add an order to a vessel's list of pending orders.\
-The order will be assigned an integer order ID. Order IDs start at 0 and new IDs are equal to the highest current ID + 1.
+The order will be assigned an integer order ID. Order IDs start at 0 and new IDs are equal to the highest current ID + 1.\
+The order can have a `time` or `interval` specified. If an exact time is specified it must be an ISO date string. If an interval is specified it must be an amount of seconds. It will be interpreted as `interval` seconds from current server time. If the order has both `time` and `interval` keys the `time` key will be priotitized.
 
 Required parameters: `vessel` `authcode` `order`
 
@@ -205,7 +206,7 @@ Output:
 {"ok": true, "vessel":"TEST1", "added_id":1}
 ```
 
-Call: `/game/TESTGAME/agenda` with `vessel=TEST1` and `authcode=733a9f3f-debc-42a0-8c71-7da1a7debdca` and `order={"task": "burn", "args": {"a": [0, 0, 0]}, "time": "2022-12-28T19:41:38.176481"}` and `html=1`\
+Call: `/game/TESTGAME/agenda` with `vessel=TEST1` and `authcode=733a9f3f-debc-42a0-8c71-7da1a7debdca` and `order={"task": "burn", "args": {"a": [0, 0, 0]}, "interval": 7200}` and `html=1`\
 Output: `Order 'burn <0.000 0.000 0.000> at 07:41 PM on Wednesday, Dec 28, 2022' successfully given to vessel TEST1 with order ID 1.`
 
 ### /game/[name]/delete_order
