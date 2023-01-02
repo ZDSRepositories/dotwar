@@ -87,14 +87,14 @@ def assemble_client(name):
 	client_html = "" #client template
 	with open(os.path.join(global_config["static_dir"], "client.html")) as client_file:
 		client_html = "".join(client_file.readlines())
-	client_html.replace("{{GAMENAME}}", name)
+	client_html = client_html.replace("{{GAMENAME}}", name)
 	return client_html
 
 
 # route for main page. not API. not POST.
 @route('/', method="GET")
 def hello_world():
-	return global_config["welcome"] + "<br>Running games:<br>" + "<br> ".join(get_game_list()) + """<hr>"""
+	return global_config["welcome"] + "<br>Running games:<br>" + "<br> ".join([f"<a href='/play/{game}'>{game}</a>" for game in get_game_list()]) + """<hr>"""
 
 #route to retrieve client. not API. not POST.
 @route("/play/<name>")
@@ -104,6 +104,7 @@ def play(name):
 		return f"Couldn't find game <pre>{name}</pre>."
 
 	return assemble_client(name)
+
 
 
 @route('/games')
@@ -145,7 +146,7 @@ def scan(name):
 			try:
 				del entity[k]
 			except:
-				print("key error on", k)
+				pass
 
 	if ("filter" in request.query) and valid_json(request.query.filter):
 		filters = json.loads(request.query.filter)

@@ -2,6 +2,8 @@
 <head></head>
 <body>
 <script language="JavaScript">
+document.getElementById("submit_btn").addEventListener("click", handle_input);
+
 function handle_input(params) {
     var command = document.getElementById("command").value;
     alert("command value: "+ command);
@@ -29,18 +31,19 @@ while((m= regex.exec(str)) !== null){
 </script>
 
 <p><b>This is an incomplete mock-up of the client, for design purposes. This page is not fully functional.</b></p>
-<div id="output" style="border: 1px solid #000000">
-    <p style="font-family: Courier, sans-serif">Welcome, commander.</p>
-    <p style="font-family: Courier, sans-serif">Remote navigation system DOTNAV booting up...</p>
-    <p style="font-family: Courier, sans-serif">Success. Connected to vessel.</p>
+<div id="output" style="background-color: #DDDDDD">
+    <p>Welcome, commander.</p>
+    <p>Remote navigation system DOTNAV booting up...</p>
+    <p>Success. Connected to vessel.</p>
 </div>
 
 <br>
 <input type="text" id="command">
-<input type="button" value="Enter command" onclick="handle_input();">
+<input type="button" value="Enter command" id="submit_btn">
 <hr>
 <p>Authcode: <input id="authcode" type="text"></p>
 <p>Vessel: <input type="text" id="vessel"></p>
+<p>System: <input type="text" id="system" value="{{GAMENAME}}" disabled></p>
 
 
 </body>

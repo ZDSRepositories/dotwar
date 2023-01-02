@@ -35,9 +35,13 @@ class Game:
 		                        "last_modified": datetime.datetime.now(),
 		                        "system_time": datetime.datetime.now()}, "entities": [], "event_log": []}
 		# self.system_time = datetime.datetime.now()
+		#constants:
+		self.LIGHTSPEED = 1079251200  # km/hr
+		self.AU_TO_KM = 1.495979e8 # 1 AU = that many kilometers
+
+		#parameters:
 		self.ENCOUNTER_RADIUS = 1.6e7  # kilometers
 		self.MAX_INSTANT_ACC = 1.6e7  # km/hr/hr
-		self.LIGHTSPEED = 1079251200  # km/hr
 		self.MAX_INSTANT_VEL = self.LIGHTSPEED
 		self.SIM_TICK = 1  # in seconds.
 		if self.save_exists() and load:
