@@ -23,6 +23,7 @@ To do:
  /play/<name> returns the client, setup for the specified game 
  Convert all endpoints from GET to POST
  
+ parse regex: (?=\bburn (\d+(?:.\d+)?) (\d+(?:.\d+)?) (\d+(?:.\d+)?)\b|\bin (\d+(?:.\d+)?) \b(seconds|hours|minutes|days)\b|\bat (\d{4}-\d\d-\d\d \d\d:\d\d\b))
 """
 
 
@@ -38,13 +39,15 @@ def load_config(directory=sys.path[0]):
 			"server_port": 80,
 			"dir": directory,
 			"game_dir": directory,
+			"static_dir":os.path.join(directory, "static"),
 			"debug": True,
 			"welcome": "Welcome to the myrmidon/dotwar test server!"
 		}
 
+global_config = load_config(sys.path[0])
 
-def get_game_list(directory=sys.path[0]):
-	files = os.listdir(directory)
+def get_game_list():
+	files = os.listdir(global_config["game_dir"])
 	game_list = []
 	for file in files:
 		if file.startswith("system.") and file.endswith(".json"):
@@ -80,13 +83,27 @@ def generate_table(headers, data_rows):
 		)
 	return "<table>" + "".join(table_rows) + "</table>"
 
+def assemble_client(name):
+	client_html = "" #client template
+	with open(os.path.join(global_config["static_dir"], "client.html")) as client_file:
+		client_html = "".join(client_file.readlines())
+	client_html.replace("{{GAMENAME}}", name)
+	return client_html
 
-global_config = load_config(sys.path[0])
 
+# route for main page. not API. not POST.
+@route('/', method="GET")
+def hello_world():
+	return global_config["welcome"] + "<br>Running games:<br>" + "<br> ".join(get_game_list()) + """<hr>"""
 
-@route('/')
-def hello_world(config=global_config):
-	return config["welcome"] + """<br>Running games:<br>""" + "<br> ".join(get_game_list()) + """<hr>"""
+#route to retrieve client. not API. not POST.
+@route("/play/<name>")
+def play(name):
+	if not name in get_game_list():
+		bottle.response.status = 404
+		return f"Couldn't find game <pre>{name}</pre>."
+
+	return assemble_client(name)
 
 
 @route('/games')
@@ -162,23 +179,6 @@ tr:nth-child(even) {
 }
 </style>"""
 		page = style_tag+table
-		"""
-		page = ["<pre>NAME\tTYPE\tCAPTAIN\tPOSITION\t\tHEADING\t\t\tACCELERATION\t\tALLEGIANCE"]
-		for entity in entities:
-			desc = "&#9;".join([str(attr) for attr in
-			                    [entity["name"],
-			                     entity["type"],
-			                     (entity["captain"] if entity["captain"] else "----"),
-			                     " ".join([format(value, ".3f") for value in (entity["r"])]),
-			                     " ".join([format(value, ".3f") for value in (entity["v"])]),
-			                     " ".join([format(value, ".3f") for value in (entity["a"])]),
-			                     ["Defenders", "Attackers", "Itself"][entity["team"]]
-			                     ]
-			                    ]
-			                   )
-			page.append(desc)
-		page.append("</pre>")
-		"""
 		return page
 	elif ("html" in request.query) and not valid_json(request.query.html):
 		return {"ok": False, "msg": "invalid JSON provided in 'html'"}

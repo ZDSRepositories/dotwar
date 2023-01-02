@@ -1,0 +1,47 @@
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<head></head>
+<body>
+<script language="JavaScript">
+function handle_input(params) {
+    var command = document.getElementById("command").value;
+    alert("command value: "+ command);
+}
+
+function parse(str){
+let m;
+
+let groups =[]
+while((m= regex.exec(str)) !== null){
+	if (m.index === regex.lastIndex) {
+		regex.lastIndex++;
+	}
+
+	//result accessed through m
+	m.forEach((match, groupIndex) =>{
+		if (match){
+			groups[groupIndex] = match;
+		}
+	});
+
+}
+
+}
+</script>
+
+<p><b>This is an incomplete mock-up of the client, for design purposes. This page is not fully functional.</b></p>
+<div id="output" style="border: 1px solid #000000">
+    <p style="font-family: Courier, sans-serif">Welcome, commander.</p>
+    <p style="font-family: Courier, sans-serif">Remote navigation system DOTNAV booting up...</p>
+    <p style="font-family: Courier, sans-serif">Success. Connected to vessel.</p>
+</div>
+
+<br>
+<input type="text" id="command">
+<input type="button" value="Enter command" onclick="handle_input();">
+<hr>
+<p>Authcode: <input id="authcode" type="text"></p>
+<p>Vessel: <input type="text" id="vessel"></p>
+
+
+</body>
+</html>
