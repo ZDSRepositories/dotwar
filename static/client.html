@@ -2,7 +2,10 @@
 <head></head>
 <body>
 <script language="JavaScript">
-document.getElementById("submit_btn").addEventListener("click", handle_input);
+window.onload = function registerEventHandlers () {
+var submit_btn = document.getElementById("submit_btn");
+submit_btn.addEventListener("click", handle_input);
+}
 
 function handle_input(params) {
     var command = document.getElementById("command").value;

@@ -101,7 +101,7 @@ def hello_world():
 def play(name):
 	if not name in get_game_list():
 		bottle.response.status = 404
-		return f"Couldn't find game <pre>{name}</pre>."
+		return f"Couldn't find game <code>{name}</code>."
 
 	return assemble_client(name)
 
