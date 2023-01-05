@@ -12,24 +12,35 @@ function handle_input(params) {
     alert("command value: "+ command);
 }
 
-function parse(str){
-let m;
+function parse(str) {
+  var regex = /(?=\bburn (\d+(?:.\d+)?) (\d+(?:.\d+)?) (\d+(?:.\d+)?)\b|\bin (\d+(?:.\d+)?) \b(seconds|hours|minutes|days)\b|\bat (\d{4}-\d\d-\d\d \d\d:\d\d\b))/;
 
-let groups =[]
-while((m= regex.exec(str)) !== null){
-	if (m.index === regex.lastIndex) {
-		regex.lastIndex++;
-	}
+  let groups = []
+  //while ((m = regex.exec(str)) !== null) {
 
-	//result accessed through m
-	m.forEach((match, groupIndex) =>{
-		if (match){
-			groups[groupIndex] = match;
-		}
-	});
+  m = regex.exec(str);
 
-}
+  for (let i = 0; i < 3; i++) {
+    console.log("starting iteration "+i);
 
+    if (m.index === regex.lastIndex) {
+      regex.lastIndex++;
+      console.log("incremented lastIndex to" +regex.lastIndex);
+    }
+
+
+    //result accessed through m
+    m.forEach((match, groupIndex) => {
+	  console.log("checking match "+match+" and groupIndex "+groupIndex);
+      if (match) {
+        groups[groupIndex] = match;
+      }
+    });
+
+    m = regex.exec(str);
+  }
+
+  return m;
 }
 </script>
 
