@@ -156,7 +156,7 @@ def scan(name):
 		return {"ok": False, "msg": "invalid JSON provided in 'filter'"}
 
 	if ("html" in request.query) and valid_json(request.query.html) and json.loads(request.query.html):
-		rows = [[entity["name"], entity["type"], (entity["captain"] if entity["captain"] else "----"),
+		rows = [[entity["name"], entity["type"], (entity["captain"] if entity["captain"] else "-----"),
 			                     f"<{entity['r'][0]:.3f} {entity['r'][1]:.3f} {entity['r'][2]:.3f}>",
 			                     f"<{entity['v'][0]:.3f} {entity['v'][1]:.3f} {entity['v'][2]:.3f}>",
 			                     f"<{entity['a'][0]:.3f} {entity['a'][1]:.3f} {entity['a'][2]:.3f}>",
@@ -224,7 +224,7 @@ def summary(name, config=global_config):
 				abbr = "  [NAV] "
 			desc = abbr.join([time, " ".join(desc)])
 			page.append(desc)
-			return "<br/>".join(page)
+		return "<br/>".join(page)
 
 	else:
 		return {"ok": True, "events": events}

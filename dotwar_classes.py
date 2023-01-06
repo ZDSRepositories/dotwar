@@ -41,9 +41,12 @@ class Game:
 
 		#parameters:
 		self.ENCOUNTER_RADIUS = 1.6e7  # kilometers
+		self.CAPTURE_RADIUS = 1.6e7 # kilometers
+		self.DEFENSE_RADIUS = 1.12e7 # kilometers
 		self.MAX_INSTANT_ACC = 1.6e7  # km/hr/hr
 		self.MAX_INSTANT_VEL = self.LIGHTSPEED
 		self.SIM_TICK = 1  # in seconds.
+
 		if self.save_exists() and load:
 			self.load()
 
@@ -244,16 +247,18 @@ class Game:
 			collisions = new_collisions
 			# find collisions that create events
 			for collision in collisions:
-				entity_a, entity_b = collision
+				entity_a, entity_b, collision_type = collision
 				if entity_a["type"] == "craft":
-					if entity_a["team"] == 1 and entity_b["type"] == "planet" and entity_b["captured"] is False:
+					# capture check:
+					if collision_type == 'CAPTURE':
 						event = {"type": "capture", "args": {"attacker": entity_a["name"], "planet": entity_b["name"]},
 						         "time": self.system["game"]["system_time"].isoformat()}
 						self.add_event(event)
 						entity_b["captured"] = True
 						print(event["args"]["attacker"], "captured planet", event["args"]["planet"], "at",
 						      str(event["time"]))
-					elif entity_a["team"] == 0 and entity_b["team"] == 1:
+					# defense check:
+					elif collision_type == 'DEFENSE':
 						event = {"type": "defense", "args": {"defender": entity_a["name"], "victim": entity_b["name"]},
 						         "time": self.system["game"]["system_time"].isoformat()}
 						self.add_event(event)
@@ -310,8 +315,14 @@ class Game:
 		for entity_a in self.system["entities"]:
 			for entity_b in self.system["entities"]:
 				if not (entity_a["name"] == entity_b["name"]):
-					if dist(entity_a["r"], entity_b["r"]) <= self.ENCOUNTER_RADIUS:
-						collisions.append([entity_a, entity_b])
+					# capture check:
+					if (entity_a["team"] == 1 and entity_b["type"] == "planet" and not(entity_b["captured"]) and
+							(dist(entity_a["r"], entity_b["r"]) <= self.CAPTURE_RADIUS)):
+						collisions.append([entity_a, entity_b, 'CAPTURE'])
+					# defense check:
+					if (entity_a["team"] == 0 and entity_b["team"] == 1 and
+							dist(entity_a["r"], entity_b["r"]) <= self.DEFENSE_RADIUS):
+						collisions.append([entity_a, entity_b, 'DEFENSE'])
 
 		return collisions
 
