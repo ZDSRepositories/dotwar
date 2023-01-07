@@ -118,7 +118,8 @@ def games():
 @route('/game/<name>/status')
 @route('/game/<name>/status/')
 def game_status(name, config=global_config):
-	g = dotwar_classes.Game(name, config["game_dir"])
+	g = update_to_now(name)
+
 	q = request.query
 	ret = {"ok": True, "game": None}
 	g.load()
@@ -136,8 +137,8 @@ def game_status(name, config=global_config):
 
 @route("/game/<name>/scan")
 def scan(name):
-	update_to_now(name)
-	g = dotwar_classes.Game(name, global_config["game_dir"])
+	g = update_to_now(name)
+
 	g.load()
 	entities = g.as_json()["entities"]
 
@@ -155,7 +156,7 @@ def scan(name):
 		return {"ok": False, "msg": "invalid JSON provided in 'filter'"}
 
 	if ("html" in request.query) and valid_json(request.query.html) and json.loads(request.query.html):
-		rows = [[entity["name"], entity["type"], (entity["captain"] if entity["captain"] else "----"),
+		rows = [[entity["name"], entity["type"], (entity["captain"] if entity["captain"] else "-----"),
 			                     f"<{entity['r'][0]:.3f} {entity['r'][1]:.3f} {entity['r'][2]:.3f}>",
 			                     f"<{entity['v'][0]:.3f} {entity['v'][1]:.3f} {entity['v'][2]:.3f}>",
 			                     f"<{entity['a'][0]:.3f} {entity['a'][1]:.3f} {entity['a'][2]:.3f}>",
@@ -190,7 +191,8 @@ tr:nth-child(even) {
 @route("/game/<name>/event_log")
 @route("/game/<name>/summary")
 def summary(name, config=global_config):
-	g = dotwar_classes.Game(name, config["game_dir"])
+	g = update_to_now(name)
+
 	g.load()
 	q = request.query
 	q.start, q.end = q.start.strip(), q.end.strip()
@@ -222,7 +224,7 @@ def summary(name, config=global_config):
 				abbr = "  [NAV] "
 			desc = abbr.join([time, " ".join(desc)])
 			page.append(desc)
-			return "<br/>".join(page)
+		return "<br/>".join(page)
 
 	else:
 		return {"ok": True, "events": events}
@@ -230,7 +232,8 @@ def summary(name, config=global_config):
 
 @route("/game/<name>/agenda")
 def agenda(name):
-	g = dotwar_classes.Game(name, global_config["game_dir"])
+	g = update_to_now(name)
+
 	g.load()
 	q = request.query
 	if not ("vessel" in q):
@@ -296,6 +299,8 @@ def add_order(name):
 
 	order_id = g.add_order(q.vessel, task=order["task"], args=order["args"], time=order["time"])
 	g.save()
+	update_to_now(name, g)
+
 	if "html" in q and valid_json(q.html) and json.loads(q.html):
 		return f"Order <code>{order['task']} {order['args']} at {order['time']:%I:%M %p on %A, %b %d, %Y}</code> given to vessel {q.vessel} with order ID {order_id}."
 	else:
@@ -305,6 +310,9 @@ def add_order(name):
 def delete_order(name):
 	# required keys: vessel, order_id, authcode
 	# optional keys: html
+
+	g = update_to_now(name)
+
 	q = request.POST
 
 	#print("in delete_order, headers =", dict(q))
@@ -332,8 +340,8 @@ def delete_order(name):
 
 
 # @route("/game/<name>/update_simulation_debug")
-def update_to_now(name):
-	game = dotwar_classes.Game(name, global_config["game_dir"])
+def update_to_now(name = None, game = None):
+	game = dotwar_classes.Game(name, global_config["game_dir"]) if game == None else game
 	old = game.system_time()
 	now = datetime.datetime.now()
 	print("simulation will be updated from {} to {}, delta of {}".format(old, now, (now - old)), "...")
@@ -341,6 +349,7 @@ def update_to_now(name):
 	new = game.system_time()
 	game.save()
 	print("simulation updated to " + new.isoformat() + ",delta of {}".format(new - old))
+	return game
 
 
 print("[INFO] Detected games:", get_game_list())
