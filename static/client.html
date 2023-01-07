@@ -1,50 +1,9 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en">
 <head></head>
 <body>
-<script language="JavaScript">
-window.onload = function registerEventHandlers () {
-var submit_btn = document.getElementById("submit_btn");
-submit_btn.addEventListener("click", handle_input);
-}
-
-function handle_input(params) {
-    var command = document.getElementById("command").value;
-    alert("command value: "+ command);
-}
-
-function parse(str) {
-  var regex = /(?=\bburn (\d+(?:.\d+)?) (\d+(?:.\d+)?) (\d+(?:.\d+)?)\b|\bin (\d+(?:.\d+)?) \b(seconds|hours|minutes|days)\b|\bat (\d{4}-\d\d-\d\d \d\d:\d\d\b))/;
-
-  let groups = []
-  //while ((m = regex.exec(str)) !== null) {
-
-  m = regex.exec(str);
-
-  for (let i = 0; i < 3; i++) {
-    console.log("starting iteration "+i);
-
-    if (m.index === regex.lastIndex) {
-      regex.lastIndex++;
-      console.log("incremented lastIndex to" +regex.lastIndex);
-    }
-
-
-    //result accessed through m
-    m.forEach((match, groupIndex) => {
-	  console.log("checking match "+match+" and groupIndex "+groupIndex);
-      if (match) {
-        groups[groupIndex] = match;
-      }
-    });
-
-    m = regex.exec(str);
-  }
-
-  return m;
-}
-</script>
-
-<p><b>This is an incomplete mock-up of the client, for design purposes. This page is not fully functional.</b></p>
+<p>
+    <b>This is an incomplete mock-up of the client, for design purposes. This page is not fully functional.</b>
+</p>
 <div id="output" style="background-color: #DDDDDD">
     <p>Welcome, commander.</p>
     <p>Remote navigation system DOTNAV booting up...</p>
@@ -59,6 +18,82 @@ function parse(str) {
 <p>Vessel: <input type="text" id="vessel"></p>
 <p>System: <input type="text" id="system" value="{{GAMENAME}}" disabled></p>
 
-
 </body>
 </html>
+
+<script>
+    window.onload = function registerEventHandlers() {
+        let submit_btn = document.getElementById("submit_btn");
+        submit_btn.addEventListener("click", handle_input);
+    }
+
+    function handle_input(params) {
+        let command = document.getElementById("command").value;
+        alert(`command value: ${command}`);
+        parse(command)
+    }
+
+    function parse(str) {
+        let m;
+        // what a readable one-liner amirite
+        let match = ((m = /\b(?:burn|cancel|scan|summary|agenda)\b/.exec(str)) ? m[0] : null)
+
+        switch (match) {
+            case "burn":
+                parse_burn(str)
+                break
+            case "cancel":
+                console.log("cancel")
+                break
+            case "scan":
+                console.log("scan")
+                break
+            case "summary":
+                console.log("summary")
+                break
+            case "agenda":
+                console.log("agenda")
+                break
+            default:
+                console.log("match fail")
+        }
+    }
+
+    function parse_burn(str) {
+        let r_burn = /\bburn (\d+(?:\.\d+)?) (\d+(?:\.\d+)?) (\d+(?:\.\d+)?)\b/
+        let r_in = /\bin (\d+(?:\.\d+)?) (second|hour|minute|day)s?\b/
+        let r_at = /\bat (\d{4}-\d\d-\d\d \d\d:\d\d:\d\d)\b/
+
+        let m_burn = r_burn.exec(str)
+        let burn_coords = m_burn.slice(1, 4)
+
+        let m_in
+        let m_at
+        let time_input
+        let interval = false
+
+        if (m_in = r_in.exec(str)) {
+            interval = true
+            switch (m_in[2]) {
+                case "second":
+                    time_input = m_in[1]
+                    break
+                case "minute":
+                    time_input = m_in[1] * 60
+                    break
+                case "hour":
+                    time_input = m_in[1] * 60 * 60
+                    break
+                case "day":
+                    time_input = m_in[1] * 60 * 60 * 24
+                    break
+            }
+        } else if (m_at = r_at.exec(str)) {
+            time_input = m_at[1]
+        } else {
+            time_input = null // should be "now"?
+        }
+
+        console.log(`a: ${burn_coords}, time_input: ${time_input}, interval?: ${interval}`)
+    }
+</script>
