@@ -1,3 +1,4 @@
+import copy
 import os
 import datetime
 import json
@@ -108,7 +109,7 @@ class Game:
 		system_file.close()
 
 	def as_json(self):
-		json_compatible = self.system
+		json_compatible = copy.deepcopy(self.system)
 		# convert system datetime to time string
 		json_compatible["game"]["system_time"] = self.system["game"]["system_time"].isoformat() if (
 				type(self.system["game"]['system_time']) != str) else self.system["game"]["system_time"]
