@@ -324,7 +324,7 @@ def delete_order(name):
 	if not type(q.order_id):
 		return {"ok":False, "msg":"order_id must be an integer"}
 	order_id = json.loads(q.order_id)
-	g = dotwar_classes.Game(name, global_config["game_dir"])
+	#g = dotwar_classes.Game(name, global_config["game_dir"])
 	vessel = g.get_entity(q.vessel)
 	if not vessel: return {"ok":False, "msg":"vessel "+q.vessel+" doesn't exist"}
 	if not vessel["authcode"] == q.authcode : return {"ok": False, "msg":f"not authorized. {q.authcode} is not this vessel's authcode"}
