@@ -300,10 +300,16 @@ def add_order(name):
 	else:
 		return {"ok": False, "msg": "Invalid JSON in order.", "input": query.order}
 
-	if "time" in order and valid_json(order["time"]) and valid_datetime(order["time"]):
-		order["time"] = datetime.datetime.fromisoformat(order["time"])
-	elif "interval" in order and type(order["interval"] in [int, float]):
-		order["time"] = datetime.datetime.now() + datetime.timedelta(seconds=order["interval"])
+	if "time" in order:
+		if valid_datetime(order["time"]):
+			order["time"] = datetime.datetime.fromisoformat(order["time"])
+		else:
+			return {"ok": False, "msg": "Invalid time parameter.", "input": query.order.time}
+	elif "interval" in order:
+		if type(order["interval"] in [int, float]):
+			order["time"] = datetime.datetime.now() + datetime.timedelta(seconds=order["interval"])
+		else:
+			return {"ok": False, "msg": "Invalid interval parameter.", "input": query.order.interval}
 	else:
 		order["time"] = datetime.datetime.now()
 
