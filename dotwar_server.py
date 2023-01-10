@@ -90,6 +90,20 @@ def assemble_client(name):
 	return client_html
 
 
+def try_authorize_vessel(game: dotwar_classes.Game, vessel_name: str, authcode: str):
+	try:
+		vessel = game.get_authorized_entity(vessel_name, authcode)
+	except LookupError as e:
+		bottle.response.status = 404
+		return {"ok": False, "msg": str(e)}
+	except ValueError as e:
+		return {"ok": False, "msg": str(e)}
+	except PermissionError as e:
+		bottle.response.status = 403
+		return {"ok": False, "msg": str(e)}
+
+	return vessel
+
 # route for main page. not API. not POST.
 @route('/', method="GET")
 def hello_world():
