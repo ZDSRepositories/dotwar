@@ -227,7 +227,7 @@ class Game:
 				pass
 
 			try:
-				entity.authcode = json_entity["captured"]
+				entity.captured = json_entity["captured"]
 			except KeyError:
 				pass
 
