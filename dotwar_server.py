@@ -242,21 +242,6 @@ def summary(name):
 		return {"ok": True, "events": events}
 
 
-def try_authorize_vessel(game: dotwar_classes.Game, vessel_name: str, authcode: str):
-	try:
-		vessel = game.get_authorized_entity(vessel_name, authcode)
-	except LookupError as e:
-		bottle.response.status = 404
-		return {"ok": False, "msg": e}
-	except ValueError as e:
-		return {"ok": False, "msg": e}
-	except PermissionError as e:
-		bottle.response.status = 403
-		return {"ok": False, "msg": e}
-
-	return vessel
-
-
 @route("/game/<name>/agenda")
 def agenda(name):
 	game = update_to_now(name)

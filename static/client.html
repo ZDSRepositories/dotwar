@@ -29,8 +29,7 @@
 
     function handle_input(params) {
         let command = document.getElementById("command").value;
-        alert(`command value: ${command}`);
-        parse(command)
+        alert(parse(command));
     }
 
     function parse(str) {
@@ -58,7 +57,7 @@
                 console.log("match fail")
         }
     }
-
+// specific command parsers
     function parse_burn(str) {
         let r_burn = /\bburn (\d+(?:\.\d+)?) (\d+(?:\.\d+)?) (\d+(?:\.\d+)?)\b/
         let r_in = /\bin (\d+(?:\.\d+)?) (second|hour|minute|day)s?\b/
@@ -94,6 +93,51 @@
             time_input = null // should be "now"?
         }
 
-        console.log(`a: ${burn_coords}, time_input: ${time_input}, interval?: ${interval}`)
+        console.log(`a: ${burn_coords}, time_input: ${time_input}, interval?: ${interval}`);
+        return {"a":burn_coords, "time_input":time_input, "interval":interval};
     }
+
+    function parse_cancel(){}
+    function parse_scan(){}
+    function parse_summary(){}
+    function parse_agenda(){}
+
+    // specific command execution
+    function handle_burn(args){}
+    function handle_cancel(args){}
+    function handle_scan(args){}
+    function handle_summary(args){}
+    function handle_agenda(args){}
+
+function fetch_local(url, headers){
+    //create XMLHttpRequest object
+    const xhr = new XMLHttpRequest()
+    //open a request with the remote server URL
+    var urlbase = window.location.protocol + "//" + window.location.hostname + (window.location.port ? ':' + window.location.port : '');
+    var url = urlbase + url;
+    console.log("fetching "+ url);
+    xhr.open(method, url)
+    //send the Http request
+    xhr.send()
+
+    //EVENT HANDLERS
+
+    //triggered when the response is completed
+    xhr.onload = function() {
+      if (xhr.status === 200) {
+        data = xhr.responseText
+        console.log("received:\n"+data)
+        return data
+      } else if (xhr.status === 404) {
+        console.log("received 404")
+      }
+    }
+
+    //triggered when a network-level error occurs with the request
+    xhr.onerror = function() {
+      console.log("Network error occurred")
+    }
+}
+
+function handle_burn(){}
 </script>
