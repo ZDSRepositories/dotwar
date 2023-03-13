@@ -121,19 +121,19 @@ def play(name):
 	return assemble_client(name)
 
 
-@route('/games')
+@route('/games', method="POST")
 def games():
 	game_list = get_game_list()
 	return {"ok": True, "games": game_list}
 
 
-@route('/game/<name>')
-@route('/game/<name>/')
-@route('/game/<name>/status')
-@route('/game/<name>/status/')
+@route('/game/<name>', method="POST")
+@route('/game/<name>/', method="POST")
+@route('/game/<name>/status', method="POST")
+@route('/game/<name>/status/', method="POST")
 def game_status(name):
 	game = update_to_now(name)
-	query = request.query
+	query = request.POST
 
 	ret = {"ok": True, "game": None}
 
@@ -149,10 +149,11 @@ def game_status(name):
 	return ret
 
 
-@route("/game/<name>/scan")
+@route("/game/<name>/scan", method="POST")
 def scan(name):
 	game = update_to_now(name)
 	json_entities = game.system_as_json()["entities"]
+	query = request.POST
 
 	for entity in json_entities:
 		for culled_attribute in ["pending", "authcode"]:
@@ -161,13 +162,13 @@ def scan(name):
 			except:
 				pass
 
-	if ("filter" in request.query) and valid_json(request.query.filter):
-		filters = json.loads(request.query.filter)
+	if ("filter" in query) and valid_json(query.filter):
+		filters = json.loads(query.filter)
 		json_entities = list(filter(lambda json_entity: all([json_entity[k] == filters[k] for k in filters]), json_entities))
-	elif ("filter" in request.query) and not valid_json(request.query.filter):
+	elif ("filter" in query) and not valid_json(query.filter):
 		return {"ok": False, "msg": "invalid JSON provided in 'filter'"}
 
-	if ("html" in request.query) and valid_json(request.query.html) and json.loads(request.query.html):
+	if ("html" in query) and valid_json(query.html) and json.loads(query.html):
 		rows = [[json_entity["name"], json_entity["type"], (json_entity["captain"] if json_entity["captain"] else "-----"),
 				f"<{json_entity['r'][0]:.3f} {json_entity['r'][1]:.3f} {json_entity['r'][2]:.3f}>",
 				f"<{json_entity['v'][0]:.3f} {json_entity['v'][1]:.3f} {json_entity['v'][2]:.3f}>",
@@ -194,17 +195,17 @@ tr:nth-child(even) {
 </style>"""
 		page = style_tag + table
 		return page
-	elif ("html" in request.query) and not valid_json(request.query.html):
+	elif ("html" in query) and not valid_json(query.html):
 		return {"ok": False, "msg": "invalid JSON provided in 'html'"}
 	else:
 		return {"ok": True, "entities": json_entities}
 
 
-@route("/game/<name>/event_log")
-@route("/game/<name>/summary")
+@route("/game/<name>/event_log", method="POST")
+@route("/game/<name>/summary", method="POST")
 def summary(name):
 	game = update_to_now(name)
-	query = request.query
+	query = request.POST
 
 	query.start, query.end = query.start.strip(), query.end.strip()
 
@@ -242,10 +243,10 @@ def summary(name):
 		return {"ok": True, "events": events}
 
 
-@route("/game/<name>/agenda")
+@route("/game/<name>/agenda", method="POST")
 def agenda(name):
 	game = update_to_now(name)
-	query = request.query
+	query = request.POST
 
 	if "vessel" not in query:
 		return {"ok": False, "msg": "Please provide a spacecraft name as 'vessel' in query string."}
@@ -276,10 +277,10 @@ def agenda(name):
 		return {"ok": True, "agenda": vessel.pending}
 
 
-@route("/game/<name>/add_order")
+@route("/game/<name>/add_order", method="POST")
 def add_order(name):
 	game = dotwar_classes.Game(name, global_config["game_dir"])
-	query = request.query
+	query = request.POST
 
 	if "vessel" not in query:
 		return {"ok": False, "msg": "Please provide a spacecraft name as 'vessel' in query string."}
@@ -330,15 +331,17 @@ def delete_order(name):
 	game = update_to_now(name)
 	query = request.POST
 
-	# print("in delete_order, headers =", dict(query))
+	print("in delete_order, headers =", dict(query))
 
 	if not ("vessel" in query and "authcode" in query and "order_id" in query):
 		return {"ok": False, "msg": "vessel, order_id, and authcode are required"}
 
-	if type(query.order_id) != int:
-		return {"ok": False, "msg": "order_id must be an integer"}
-
 	order_id = json.loads(query.order_id)
+	try:
+		order_id = int(order_id)
+	except:
+		return {"ok": False, "msg": f"order_id must be an integer, but is {query.order_id}"}
+
 	auth = try_authorize_vessel(game, query.vessel, query.authcode)
 
 	if type(auth) is dotwar_classes.Entity:
