@@ -4,7 +4,7 @@
 <p>
     <b>This is an incomplete mock-up of the client, for design purposes. This page is not fully functional.</b>
 </p>
-<div id="output" style="background-color: #DDDDDD">
+<div id="output" >
     <p>Welcome, commander.</p>
     <p>Remote navigation system DOTNAV booting up...</p>
     <p>Success. Connected to vessel.</p>
@@ -27,9 +27,30 @@
         submit_btn.addEventListener("click", handle_input);
     }
 
+
     function handle_input(params) {
         let command = document.getElementById("command").value;
-        alert(parse(command));
+        display("<pre>> " + command + "</pre>");
+        result = handle(parse(command));
+        display(result+"<hr>");
+    }
+
+    function get_vessel() {
+        return document.getElementById("vessel").value;
+    }
+
+    function get_authcode() {
+        return document.getElementById("authcode").value;
+    }
+
+    function get_system() {
+        return document.getElementById("system").value;
+    }
+
+    function display(html) {
+        //add html to the 'navigation console'
+        out = document.getElementById("output");
+        out.innerHTML += html;
     }
 
     function parse(str) {
@@ -39,25 +60,68 @@
 
         switch (match) {
             case "burn":
-                parse_burn(str)
+                return {
+                    "match": match, "command": str, "parsed": parse_burn(str)
+                };
                 break
             case "cancel":
                 console.log("cancel")
+                return {
+                    "match": match, "command": str, "parsed": parse_cancel(str)
+                };
                 break
             case "scan":
                 console.log("scan")
+                return {
+                    "match": match, "command": str, "parsed": parse_scan(str)
+                };
                 break
             case "summary":
                 console.log("summary")
+                return {
+                    "match": match, "command": str, "parsed": parse_summary(str)
+                };
                 break
             case "agenda":
                 console.log("agenda")
+                return {
+                    "match": match, "command": str, "parsed": parse_agenda(str)
+                };
                 break
             default:
-                console.log("match fail")
+                console.log("match fail");
         }
     }
-// specific command parsers
+
+    function handle(args) {
+        console.log("overall handler called with "+ JSON.stringify(args));
+        switch (args.match) {
+            case "burn":
+                console.log("handling burn");
+                return handle_burn(args.parsed);
+                break
+            case "cancel":
+                console.log("handling cancel")
+                return handle_cancel(args.parsed);
+                break
+            case "scan":
+                console.log("handling scan")
+                return handle_scan(args.parsed);
+                break
+            case "summary":
+                console.log("handling summary")
+                return handle_summary(args.parsed);
+                break
+            case "agenda":
+                console.log("handling agenda")
+                return handle_agenda(args.parsed);
+                break
+            default:
+                console.log("match fail");
+        }
+    }
+
+    // ** SPECIFIC COMMAND PARSERS
     function parse_burn(str) {
         let r_burn = /\bburn (\d+(?:\.\d+)?) (\d+(?:\.\d+)?) (\d+(?:\.\d+)?)\b/
         let r_in = /\bin (\d+(?:\.\d+)?) (second|hour|minute|day)s?\b/
@@ -94,50 +158,92 @@
         }
 
         console.log(`a: ${burn_coords}, time_input: ${time_input}, interval?: ${interval}`);
-        return {"a":burn_coords, "time_input":time_input, "interval":interval};
+        return {
+            "args":{"a": burn_coords},
+            "time_input": time_input,
+            "interval": interval
+        };
     }
 
-    function parse_cancel(){}
-    function parse_scan(){}
-    function parse_summary(){}
-    function parse_agenda(){}
+    function parse_cancel(str) {
+        return str
+    }
+
+    function parse_scan(str) {
+        return str
+    }
+
+    function parse_summary(str) {
+        return str
+    }
+
+    function parse_agenda(str) {
+        return str
+    }
 
     // specific command execution
-    function handle_burn(args){}
-    function handle_cancel(args){}
-    function handle_scan(args){}
-    function handle_summary(args){}
-    function handle_agenda(args){}
-
-function fetch_local(url, headers){
-    //create XMLHttpRequest object
-    const xhr = new XMLHttpRequest()
-    //open a request with the remote server URL
-    var urlbase = window.location.protocol + "//" + window.location.hostname + (window.location.port ? ':' + window.location.port : '');
-    var url = urlbase + url;
-    console.log("fetching "+ url);
-    xhr.open(method, url)
-    //send the Http request
-    xhr.send()
-
-    //EVENT HANDLERS
-
-    //triggered when the response is completed
-    xhr.onload = function() {
-      if (xhr.status === 200) {
-        data = xhr.responseText
-        console.log("received:\n"+data)
-        return data
-      } else if (xhr.status === 404) {
-        console.log("received 404")
-      }
+    // BURN
+    function handle_burn(args) {
+        args["task"] = "burn";
+        args = JSON.stringify(args);
+        console.log("in burn handler, args " + args);
+        response = post_local("/game/" + get_system() + "/add_order", "html=1&authcode="+get_authcode()+"&vessel="+get_vessel()+"&order="+args);
+        console.log("response is " + response);
+        return response;
     }
 
-    //triggered when a network-level error occurs with the request
-    xhr.onerror = function() {
-      console.log("Network error occurred")
-    }
-}
+    // CANCEL
+    function handle_cancel(args) {}
 
-function handle_burn(){}
+    // SCAN
+    function handle_scan(args) {
+        console.log("in scan handler, args " + args);
+        response = post_local("/game/" + get_system() + "/scan", "html=1");
+        console.log("response is " + response);
+        return response;
+    }
+    // SUMMARY
+    function handle_summary(args) {
+        response = post_local("/game/" + get_system() + "/summary", "html=1");
+        return response;
+    }
+    // AGENDA
+    function handle_agenda(args) {}
+    //** END COMMAND-SPECIFIC HANDLERS**
+
+    function post_local(url, body) {
+        //create XMLHttpRequest object
+        const xhr = new XMLHttpRequest()
+        //open a request with the remote server URL
+        var urlbase = window.location.protocol + "//" + window.location.hostname + (window.location.port ? ':' + window.location.port : '');
+        var url = urlbase + url;
+        //
+        //for
+        console.log("POSTing " + url);
+        console.log("POST body:" +body)
+        xhr.open("POST", url, false)
+        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+        //send the Http request
+        xhr.send(body)
+
+        //EVENT HANDLERS
+
+        //triggered when the response is completed
+        xhr.onload = function(e) {
+            if (xhr.status === 200 || xhr.status != 404) {
+                data = xhr.responseText
+                console.log("received:\n" + data)
+                return data;
+            } else if (xhr.status === 404) {
+                console.log("received 404")
+            }
+        }
+
+        //triggered when a network-level error occurs with the request
+        xhr.onerror = function() {
+            console.log("Network error occurred")
+        }
+
+        return xhr.responseText;
+    }
 </script>

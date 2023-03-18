@@ -68,6 +68,8 @@ def valid_datetime(iso_string):
 		return False
 	return True
 
+def select_err(err, use_html):
+	return err if use_html else {"ok": False, "msg":err}
 
 def generate_table(headers, data_rows):
 	# headers: list of table headers.
@@ -154,6 +156,7 @@ def scan(name):
 	game = update_to_now(name)
 	json_entities = game.system_as_json()["entities"]
 	query = request.POST
+	print("HTTP?", query.html)
 
 	for entity in json_entities:
 		for culled_attribute in ["pending", "authcode"]:
@@ -283,22 +286,22 @@ def add_order(name):
 	query = request.POST
 
 	if "vessel" not in query:
-		return {"ok": False, "msg": "Please provide a spacecraft name as 'vessel' in query string."}
+		return select_err("Please provide a spacecraft name as 'vessel' in query string.", query.html)
 
 	if "authcode" not in query:
-		return {"ok": False, "msg": "Please provide an authorization code as 'authcode' in query string."}
+		return select_err("Please provide an authorization code as 'authcode' in query string.", query.html)
 
 	auth = try_authorize_vessel(game, query.vessel, query.authcode)
 
 	if type(auth) is dotwar_classes.Entity:
 		vessel = auth
 	else:
-		return auth
+		return select_err(auth["msg"], query.html)
 
 	if valid_json(query.order):
 		order = json.loads(query.order)
 	else:
-		return {"ok": False, "msg": "Invalid JSON in order.", "input": query.order}
+		return select_err(f"Invalid JSON in order {query.order}", query.html)
 
 	if "time" in order:
 		if valid_datetime(order["time"]):
