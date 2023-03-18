@@ -93,6 +93,8 @@ class Entity:
 		if task == "burn":
 			if "a" not in args:
 				raise Exception("Burn order creation missing 'a' in args")
+		if not all([type(e) in [int, float] for e in args["a"]]):
+			raise Exception(f"Acceleration must be a list of integers or floats, not {[type(e) for e in args['a']]}")
 
 		order["order_id"] = (max([pending_order["order_id"] for pending_order in self.get_pending()]) + 1)\
 			if len(self.get_pending()) else 0

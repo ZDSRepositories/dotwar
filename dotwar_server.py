@@ -300,20 +300,26 @@ def add_order(name):
 
 	if valid_json(query.order):
 		order = json.loads(query.order)
+		print(f"ORDER JSON: {order}")
 	else:
 		return select_err(f"Invalid JSON in order {query.order}", query.html)
 
-	if "time" in order:
+	if order["time"] == None:
+		order["time"] = datetime.datetime.now()
+	elif "interval" in order:
+		if type(order["interval"] in [int, float]):
+			print(f"order time is at an interval of {order['time']} seconds")
+			order["time"] = datetime.datetime.now() + datetime.timedelta(seconds=order["time"])
+			print(f"set order time to {order['time'].isoformat()}")
+		else:
+			return {"ok": False, "msg": f"Invalid interval parameter: type must be int or float, not {type(order['interval'])}", "input": query.order}
+	elif "time" in order:
 		if valid_datetime(order["time"]):
 			order["time"] = datetime.datetime.fromisoformat(order["time"])
 		else:
-			return {"ok": False, "msg": "Invalid time parameter.", "input": query.order.time}
-	elif "interval" in order:
-		if type(order["interval"] in [int, float]):
-			order["time"] = datetime.datetime.now() + datetime.timedelta(seconds=order["interval"])
-		else:
-			return {"ok": False, "msg": "Invalid interval parameter.", "input": query.order.interval}
+			return {"ok": False, "msg": "Invalid time parameter.", "input": query.order}
 	else:
+		print("NO TIME SPECIFIED IN ORDER, SETTING TO CURRENT TIME")
 		order["time"] = datetime.datetime.now()
 
 	order["args"]["a"] = [float(e) for e in order["args"]["a"]]

@@ -22,9 +22,11 @@
 </html>
 
 <script>
-    window.onload = function registerEventHandlers() {
+    window.onload = function registerEventHandlersAndLoad() {
         let submit_btn = document.getElementById("submit_btn");
         submit_btn.addEventListener("click", handle_input);
+
+
     }
 
 
@@ -185,6 +187,7 @@
     // BURN
     function handle_burn(args) {
         args["task"] = "burn";
+        args.time = args.time_input;
         args = JSON.stringify(args);
         console.log("in burn handler, args " + args);
         response = post_local("/game/" + get_system() + "/add_order", "html=1&authcode="+get_authcode()+"&vessel="+get_vessel()+"&order="+args);
@@ -208,7 +211,10 @@
         return response;
     }
     // AGENDA
-    function handle_agenda(args) {}
+    function handle_agenda(args) {
+        response = post_local("/game/" + get_system() + "/agenda", "html=1&authcode="+get_authcode()+"&vessel="+get_vessel());
+        return response;
+    }
     //** END COMMAND-SPECIFIC HANDLERS**
 
     function post_local(url, body) {
