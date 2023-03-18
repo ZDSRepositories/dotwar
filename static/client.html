@@ -168,7 +168,9 @@
     }
 
     function parse_cancel(str) {
-        return str
+        r = /[\d]+/; //regex to find number
+        var order_id = parseInt(r.exec(str)[0]);
+        return {order_id}
     }
 
     function parse_scan(str) {
@@ -196,7 +198,11 @@
     }
 
     // CANCEL
-    function handle_cancel(args) {}
+    function handle_cancel(args) {
+        response = post_local("/game/" + get_system() + "/delete_order", "html=1&authcode="+get_authcode()+"&vessel="+get_vessel()+"&order_id="+args.order_id);
+        console.log("response is " + response);
+        return response;
+    }
 
     // SCAN
     function handle_scan(args) {
