@@ -316,6 +316,7 @@ def add_order(name):
 	else:
 		order["time"] = datetime.datetime.now()
 
+	order["args"]["a"] = [float(e) for e in order["args"]["a"]]
 	order_id = vessel.add_order(task=order["task"], args=order["args"], time=order["time"])
 	game.save()
 	update_to_now(name, game)

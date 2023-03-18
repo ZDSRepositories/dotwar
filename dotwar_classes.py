@@ -12,6 +12,7 @@ def dist(a, b):
 
 
 def mag(a):
+	#print(f"vector {a} of type {type(a)}")
 	return np.sqrt(a.dot(a))
 
 
@@ -408,6 +409,7 @@ class Game:
 			entity = self.get_entity(order["parent_entity"])
 			if order["task"] == "burn":
 				a = np.array(order["args"]["a"])
+				#print(f"HANDLING ACCELERATION {a} of type {type(a)}")
 				a = ((a / mag(a)) * self.MAX_INSTANT_ACC) if (
 						mag(a) > self.MAX_INSTANT_ACC) else a  # limit acceleration to max
 				entity.a = a
