@@ -124,7 +124,7 @@
 
     // ** SPECIFIC COMMAND PARSERS
     function parse_burn(str) {
-        let r_burn = /\bburn (\d+(?:\.\d+)?) (\d+(?:\.\d+)?) (\d+(?:\.\d+)?)\b/
+        let r_burn = /\bburn (-?\d+(?:\.\d+)?) (-?\d+(?:\.\d+)?) (-?\d+(?:\.\d+)?)\b/
         let r_in = /\bin (\d+(?:\.\d+)?) (second|hour|minute|day)s?\b/
         let r_at = /\bat (\d{4}-\d\d-\d\d \d\d:\d\d:\d\d)\b/
 
