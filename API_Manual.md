@@ -11,7 +11,7 @@ For example, endpoint "/games" on server dotwar.pythonanywhere.com would be call
 All endpoints expect POST requests and will error if a different method is used.\
 Some routes are not part of the API per se and will be requested by browsers, so they will use GET.
 
-All key-value pairs that are parameters for an endpoint are to be provided as POST headers.
+All key-value pairs that are parameters for an endpoint are to be provided as POST body key-value pairs.
 
 Some endpoints will trigger an update run of a simulation. Some of these will update the simulation before the endpoint does its job (most info-related endpoints such as /scan) while some will update the simulation after the endpoint does its job (e.g. /add_order).
 
