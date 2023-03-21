@@ -16,7 +16,7 @@ All key-value pairs that are parameters for an endpoint are to be provided as PO
 Some endpoints will trigger an update run of a simulation. Some of these will update the simulation before the endpoint does its job (most info-related endpoints such as /scan) while some will update the simulation after the endpoint does its job (e.g. /add_order).
 
 ## Parameters and Formatting
-All parameters are provided as POST headers, although this page lists them as GET query strings for convenience.\
+All parameters are provided as POST key-value pairs, although this page lists them as GET query strings for convenience.\
 All dates are expected and returned as ISO-format strings, specifically those compatible with Python's `datetime` module.\
 Other parameters are expected to be strings, or strings of valid JSON (that is, parseable by Python `json.loads()`.)
 
