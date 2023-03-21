@@ -193,7 +193,7 @@ The order may have a `time`specified. If interval is provided and true, `time` i
 
 Required parameters: `vessel` `authcode` `order`
 
-Optional parameters: `html` `time`
+Optional parameters: `html`
 
 Updates sim: after operation.
 
