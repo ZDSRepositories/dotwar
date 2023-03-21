@@ -189,11 +189,11 @@ at 02:52 AM on Wednesday, Dec 28, 2022: burn [1.000 0.000 0.000] ; order ID: 0
 ### /game/[name]/add_order
 Add an order to a vessel's list of pending orders.\
 The order will be assigned an integer order ID. Order IDs start at 0 and new IDs are equal to the highest current ID + 1.\
-The order can have a `time` or `interval` specified. If an exact time is specified it must be an ISO date string. If an interval is specified it must be a float, and will be interpreted as `interval` seconds from current server time. If the order has both `time` and `interval` keys the `time` key will be priotitized. If neither time nor interval is given, the current server time will be used.
+The order must have a `time`specified. If interval is provided and true, `time` is interpreted as an interval of seconds to wait until executing the order. Otherwise, `time` represents the time the order will be executed, and must be an ISO date string. If `time` is not given, the current server time will be used.
 
 Required parameters: `vessel` `authcode` `order`
 
-Optional parameters: `html`
+Optional parameters: `html` `time`
 
 Updates sim: after operation.
 
