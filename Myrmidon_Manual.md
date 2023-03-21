@@ -27,12 +27,12 @@ Vessels can travel at speeds up to approximately lightspeed, specifically 107925
 #### Controlling and monitoring your ship
 The parser recognizes two types of commands. *Orders*, which affect the ship, are added to a ship's pending orders, and carried out at a certain time. *Requests* are requests for data on the ship or its environment, and return a report immediately.
 
-Orders require a time or time interval to be specified in the command. Times specified in other commands will be ignored. If a time isn't specified in an order, the current real-life time is used.
+Some orders require a time or time interval to be specified in the command. Times specified in other commands will be ignored. If a time isn't specified in an order, the current real-life time is used.
 
 Orders:
 - burn *x y z*
     
-    `burn` sets the ship's acceleration to [*x*, *y*, *z*]. Since it's an order, a time or interval has to be specified somewhere else in the command.
+    `burn` sets the ship's acceleration to [*x*, *y*, *z*]. A time or interval has to be specified somewhere else in the command.
     Examples:
     ```
     in 3 hours burn 0 0 0
