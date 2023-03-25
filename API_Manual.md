@@ -16,7 +16,7 @@ All key-value pairs that are parameters for an endpoint are to be provided as PO
 Some endpoints will trigger an update run of a simulation. Some of these will update the simulation before the endpoint does its job (most info-related endpoints such as /scan) while some will update the simulation after the endpoint does its job (e.g. /add_order).
 
 ## Parameters and Formatting
-All parameters are provided as POST headers, although this page lists them as GET query strings for convenience.\
+All parameters are provided as POST key-value pairs, although this page lists them as GET query strings for convenience.\
 All dates are expected and returned as ISO-format strings, specifically those compatible with Python's `datetime` module.\
 Other parameters are expected to be strings, or strings of valid JSON (that is, parseable by Python `json.loads()`.)
 
@@ -189,7 +189,7 @@ at 02:52 AM on Wednesday, Dec 28, 2022: burn [1.000 0.000 0.000] ; order ID: 0
 ### /game/[name]/add_order
 Add an order to a vessel's list of pending orders.\
 The order will be assigned an integer order ID. Order IDs start at 0 and new IDs are equal to the highest current ID + 1.\
-The order can have a `time` or `interval` specified. If an exact time is specified it must be an ISO date string. If an interval is specified it must be a float, and will be interpreted as `interval` seconds from current server time. If the order has both `time` and `interval` keys the `time` key will be priotitized. If neither time nor interval is given, the current server time will be used.
+The order may have a `time`specified. If interval is provided and true, `time` is interpreted as a number of seconds to wait until executing the order. Otherwise, `time` represents the time the order will be executed, and must be an ISO date string. If `time` is not given, the current server time will be used.
 
 Required parameters: `vessel` `authcode` `order`
 

@@ -27,12 +27,12 @@ Vessels can travel at speeds up to approximately lightspeed, specifically 107925
 #### Controlling and monitoring your ship
 The parser recognizes two types of commands. *Orders*, which affect the ship, are added to a ship's pending orders, and carried out at a certain time. *Requests* are requests for data on the ship or its environment, and return a report immediately.
 
-Orders require a time or time interval to be specified in the command. Times specified in other commands will be ignored. If a time isn't specified in an order, the current real-life time is used.
+Some orders require a time or time interval to be specified in the command. Times specified in other commands will be ignored. If a time isn't specified in an order, the current real-life time is used.
 
 Orders:
 - burn *x y z*
     
-    `burn` sets the ship's acceleration to [*x*, *y*, *z*]. Since it's an order, a time or interval has to be specified somewhere else in the command.
+    `burn` sets the ship's acceleration to [*x*, *y*, *z*]. A time or interval has to be specified somewhere else in the command.
     Examples:
     ```
     in 3 hours burn 0 0 0
@@ -49,7 +49,7 @@ Requests:
 - `agenda` lists the pending orders for your vessel.
 
 #### Details
-Time intervals are recognized by the keywords `minutes`, `hours`, and `days`. Multiple intervals will be summed; e.g. `in 2 hours 3 minutes` will yield the same as `in 123 minutes`. Exact dates must follow the keyword `at`. Exact dates must be written as *year-month-day hour:minute*, all integers, with zero-padding and in 24-hour time. For example, 3am on January 1, 2022 would be `at 2022-01-01 03:00`. This will hopefully be made more flexible in the future.
+Time intervals are recognized by the keywords `minutes`, `hours`, and `days`. Exact dates must follow the keyword `at`. Exact dates must be written as *year-month-day hour:minute*, all integers, with zero-padding and in 24-hour time. For example, 3am on January 1, 2022 would be `at 2022-01-01 03:00`. This will hopefully be made more flexible in the future.
 
 Each command is a single line of text.
 Words in a command are separated by spaces. The parser counts commas, periods, and other clause punctuation as part of the word, so you probably want to avoid them.
