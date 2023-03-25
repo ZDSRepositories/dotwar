@@ -140,11 +140,13 @@ def motion_seconds(entity: Entity, delta: float or int):
 
 
 class Game:
-	def __init__(self, name: str, game_path: str, load=True):
+	def __init__(self, name: str, game_path: str, load=True, force_new = False):
 		self.name = name
 		self.system_path = game_path
 		self.system_filename = f"system.{self.name}.json"
 		self.full_path = os.path.join(self.system_path, self.system_filename)
+		if not force_new and not os.path.exists(self.full_path):
+			raise Exception("new game being created in illegal context")
 		self.system = {"game":
 						{"name": self.name,
 						"created_on": datetime.datetime.now(),
@@ -185,6 +187,7 @@ class Game:
 		self.set_system_time(self.get_system_time() + value)
 
 	def new(self, overwrite=False):
+		#raise Exception("creating new savefile")
 		# create files on disk representing system, if they don't exist.
 		start = datetime.datetime.now()
 		if self.save_exists() and not overwrite:  # if there's a save file, and we aren't supposed to touch it:
