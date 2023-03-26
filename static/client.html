@@ -222,12 +222,12 @@
     }
     //** END COMMAND-SPECIFIC HANDLERS**
 
-    function post_local(url, body) {
+    function post_local(service, body) {
         //create XMLHttpRequest object
         const xhr = new XMLHttpRequest()
         //open a request with the remote server URL
         var urlbase = window.location.protocol + "//" + window.location.hostname + (window.location.port ? ':' + window.location.port : '');
-        var url = urlbase + url;
+        var url = urlbase + service;
         //
         //for
         console.log("POSTing " + url);
