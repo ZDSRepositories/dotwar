@@ -3,7 +3,7 @@ import datetime
 import bottle
 
 import dotwar_classes
-from bottle import run, route, request
+from bottle import run, route, request, hook, response, HTTPResponse
 import os
 import sys
 import json
@@ -384,6 +384,26 @@ def update_to_now(name=None, game: dotwar_classes.Game = None):
 	game.save()
 	print("simulation updated to " + new.isoformat() + ",delta of {}".format(new - old))
 	return game
+
+cors_headers = {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+    # 'Access-Control-Allow-Headers': 'X-Token, ...',
+    # 'Access-Control-Expose-Headers': 'X-My-Custom-Header, ...',
+    # 'Access-Control-Max-Age': '86400',
+    # 'Access-Control-Allow-Credentials': 'true',
+}
+
+@hook('before_request')
+def handle_options():
+    if request.method == 'OPTIONS':
+        # Bypass request routing and immediately return a response
+        raise HTTPResponse(headers=cors_headers)
+
+@hook('after_request')
+def enable_cors():
+    for key, value in cors_headers.items():
+       response.set_header(key, value)
 
 
 print("[INFO] Detected games:", get_game_list())
