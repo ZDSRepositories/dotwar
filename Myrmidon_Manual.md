@@ -14,6 +14,7 @@ These numbers are slightly modified from the myrmidon '75 manual by Ward Cunning
 
 ### Control and Movement
 Objects in the system move "in real time", according to simple Newtonian kinematics of constant acceleration.\
+Your vessel has a position, heading (velocity vector), acceleration, agenda of pending orders, and authcode (required to add orders.)\
 You control your vessel by adding orders to it. These orders will be carried out at a given time and will change the ship's acceleration.
 In fact, this is the only order you can give your ship. When the order is carried out, your ship's engines will begin to accelerate as ordered, 
 instantly setting the ship's acceleration to the given vector.
