@@ -232,11 +232,11 @@ def summary(name):
 				desc = ["vessel", event["args"]["attacker"], "captured", event["args"]["planet"]]
 				abbr = "  [ATK] "
 			elif event["type"] == "defense":
-				desc = ["vessel", event["args"]["defender"], "destroyed vessel", event["args"]["victim"]]
+				desc = ["vessel", event["args"]["defender"], "destroyed vessel", event["args"]["victim"], "while at coords", str([float(format(value, ".3f")) for value in event["args"]["defender_kinematics"]["r"]])]
 				abbr = "  [DEF] "
 			elif event["type"] == "burn":
 				desc = ["vessel", event["args"]["vessel"], "started burn", str(event["args"]["a"]), "while at coords",
-						str([float(format(value, ".3f")) for value in event["args"]["position"]])]
+						str([float(format(value, ".3f")) for value in event["args"]["kinematics"]["r"]])]
 				abbr = "  [NAV] "
 			desc = abbr.join([time, " ".join(desc)])
 			page.append(desc)

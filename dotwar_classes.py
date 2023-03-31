@@ -382,7 +382,7 @@ class Game:
 				if entity_a.entity_type == "craft":
 					# capture check:
 					if collision_type == 'CAPTURE':
-						event = {"type": "capture", "args": {"attacker": entity_a.name, "planet": entity_b.name},
+						event = {"type": "capture", "args": {"attacker": entity_a.name, "planet": entity_b.name, "kinematics":{"r":entity_a.r.tolist(), "v":entity_a.v.tolist(), "a":entity_a.a.tolist()}},
 								"time": (this_moment + time).isoformat()}
 						self.add_event(event)
 						entity_b.captured = True
@@ -390,7 +390,8 @@ class Game:
 							str(event["time"]))
 					# defense check:
 					elif collision_type == 'DEFENSE':
-						event = {"type": "defense", "args": {"defender": entity_a.name, "victim": entity_b.name},
+						event = {"type": "defense", "args":
+							{"defender": entity_a.name, "victim": entity_b.name, "defender_kinematics":{"r":entity_a.r.tolist(), "v":entity_a.v.tolist(), "a":entity_a.a.tolist()}, "victim_kinematics":{"r":entity_b.r.tolist(), "v":entity_b.v.tolist(), "a":entity_b.a.tolist()}},
 								"time": (this_moment + time).isoformat()}
 						self.add_event(event)
 						self.system["entities"].__delitem__(entity_b.name)
@@ -422,7 +423,7 @@ class Game:
 								"args": {
 									"vessel": entity.name,
 									"a": order["args"]["a"],
-									"position": (entity.r.tolist())
+									"kinematics":{"r":entity.r.tolist(), "v":entity.v.tolist(), "a":entity.a.tolist()}
 								},
 								"time": order["time"].isoformat()
 								})
