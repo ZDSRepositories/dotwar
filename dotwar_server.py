@@ -229,16 +229,15 @@ def summary(name):
 			desc = ""
 			abbr = ""
 			if event["type"] == "capture":
-				desc = ["vessel", event["args"]["attacker"], "captured", event["args"]["planet"]]
+				desc = f'vessel {event["args"]["attacker"]} captured {event["args"]["planet"]}'
 				abbr = "  [ATK] "
 			elif event["type"] == "defense":
-				desc = ["vessel", event["args"]["defender"], "destroyed vessel", event["args"]["victim"], "while at coords", str([float(format(value, ".3f")) for value in event["args"]["defender_kinematics"]["r"]])]
+				desc = f'vessel {event["args"]["defender"]} destroyed vessel {event["args"]["victim"]} while at coords {str([float(format(value, ".3f")) for value in event["args"]["defender_kinematics"]["r"]])}'
 				abbr = "  [DEF] "
 			elif event["type"] == "burn":
-				desc = ["vessel", event["args"]["vessel"], "started burn", str(event["args"]["a"]), "while at coords",
-						str([float(format(value, ".3f")) for value in event["args"]["kinematics"]["r"]])]
+				desc = f'vessel {event["args"]["vessel"]} started burn {event["args"]["a"]} while at coords {str([float(format(value, ".3f")) for value in event["args"]["kinematics"]["r"]])}'
 				abbr = "  [NAV] "
-			desc = abbr.join([time, " ".join(desc)])
+			desc = abbr.join([time, desc])
 			page.append(desc)
 		return "<br/>".join(page)
 
