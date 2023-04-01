@@ -306,7 +306,7 @@ def add_order(name):
 	if order["time"] == None:
 		order["time"] = datetime.datetime.now()
 	elif "interval" in order:
-		if type(order["interval"] in [int, float]):
+		if order["interval"]:
 			print(f"order time is at an interval of {order['time']} seconds")
 			order["time"] = datetime.datetime.now() + datetime.timedelta(seconds=order["time"])
 			print(f"set order time to {order['time'].isoformat()}")
