@@ -399,13 +399,6 @@ def update_to_now(name=None, game: dotwar_classes.Game = None):
 	print("simulation updated to " + new.isoformat() + ",delta of {}".format(new - old))
 	return game
 
-@error(500)
-def time_travel(e):
-	print(str(e))
-	response.status = 429
-	response.set_header("Retry-After", 5)
-	return "internal error, likely too many responses. try again..."
-
 cors_headers = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
