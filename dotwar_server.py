@@ -8,6 +8,7 @@ import os
 import sys
 import json
 import re
+import math
 # import urllib.parse
 from urllib.parse import unquote
 
@@ -336,7 +337,8 @@ def add_order(name):
 		print("NO TIME SPECIFIED IN ORDER, SETTING TO CURRENT TIME")
 		order["time"] = datetime.datetime.now()
 
-	order["args"]["a"] = [float(e) for e in order["args"]["a"]]
+	order["args"]["a"] = [(float(e) if (not math.isnan(e) and not math.isinf(e)) else 0) for e in order["args"]["a"]]
+
 	order_id = vessel.add_order(task=order["task"], args=order["args"], time=order["time"])
 	game.save()
 	update_to_now(name, game)

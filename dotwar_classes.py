@@ -4,7 +4,7 @@ import datetime
 import json
 import uuid
 import numpy as np
-
+import math
 
 def dist(a, b):
 	c = np.array(b) - np.array(a)
@@ -97,6 +97,8 @@ class Entity:
 		if task == "burn":
 			if "a" not in args:
 				raise Exception("Burn order creation missing 'a' in args")
+			if any([(math.isnan(e) or math.isinf(e)) for e in args["a"]]):
+				raise ValueError("NaN and Inf not allowed in acceleration")
 		if not all([type(e) in [int, float] for e in args["a"]]):
 			raise Exception(f"Acceleration must be a list of integers or floats, not {[type(e) for e in args['a']]}")
 
