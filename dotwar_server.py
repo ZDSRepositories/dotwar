@@ -7,6 +7,7 @@ from bottle import run, route, request, hook, response, HTTPResponse
 import os
 import sys
 import json
+import re
 # import urllib.parse
 from urllib.parse import unquote
 
@@ -17,11 +18,7 @@ from urllib.parse import unquote
 #  /game/<name>/event_log, /game/<name>/summary
 #  /game/<name>/agenda?vessel=&authcode=
 #  /add_order?vessel=&authcode=&order={"task":"burn","args":{"a":[3d acceleration]}},"time":ISO date string}
-# To do:
-#  TODO: /game/<name>/delete_order?vessel=&authcode=&order_id=
-#  TODO: /play/<name> returns the client, setup for the specified game
-#  TODO: Convert all endpoints from GET to POST
-
+#  ....
 
 def load_config(directory=sys.path[0]):
 	if os.path.exists(os.path.join(directory, "config.json")):
@@ -42,7 +39,7 @@ def load_config(directory=sys.path[0]):
 
 
 global_config = load_config(sys.path[0])
-
+TMNS120 = 0
 
 def get_game_list():
 	files = os.listdir(global_config["game_dir"])
@@ -153,6 +150,11 @@ def game_status(name):
 
 @route("/game/<name>/scan", method="POST")
 def scan(name):
+	# FUNNY GLOBAL TRICK
+	#global TMNS120
+	#print("TMNS120", TMNS120)
+	#TMNS120 += 1
+
 	game = update_to_now(name)
 	json_entities = game.system_as_json()["entities"]
 	query = request.POST
@@ -167,7 +169,7 @@ def scan(name):
 
 	if ("filter" in query) and valid_json(query.filter):
 		filters = json.loads(query.filter)
-		json_entities = list(filter(lambda json_entity: all([json_entity[k] == filters[k] for k in filters]), json_entities))
+		json_entities = list(filter(lambda json_entity: all([re.search(filters[k], str(json_entity[k])) for k in filters]), json_entities))
 	elif ("filter" in query) and not valid_json(query.filter):
 		return {"ok": False, "msg": "invalid JSON provided in 'filter'"}
 
@@ -209,6 +211,7 @@ tr:nth-child(even) {
 def summary(name):
 	game = update_to_now(name)
 	query = request.POST
+	print(query.keys())
 
 	query.start, query.end = query.start.strip(), query.end.strip()
 
@@ -218,6 +221,17 @@ def summary(name):
 			query.end and valid_datetime(query.end)) else game.get_system_time()
 
 	events = game.get_event_log(start, end)
+
+	if ("filter" in query) and valid_json(query.filter):
+		filters = json.loads(query.filter)
+		print(f"filtering events with filters {filters}")
+		try:
+			events = list(filter(lambda event: all([re.search(filters[k], str(event[k] if k in event.keys() else "")) for k in filters]), events))
+		except Exception as e:
+			response.status = 400
+			return {"ok": False, "msg": str("filter values produced error: "+e)}
+	elif ("filter" in query) and not valid_json(query.filter):
+		return {"ok": False, "msg": "invalid JSON provided in 'filter'"}
 
 	if ("start" in query and "end" in query) and not (valid_datetime(query.start) and valid_datetime(query.end)):
 		return {"ok": False, "msg": "if used, start and end must be ISO datetime strings"}
@@ -311,7 +325,7 @@ def add_order(name):
 			order["time"] = datetime.datetime.now() + datetime.timedelta(seconds=order["time"])
 			print(f"set order time to {order['time'].isoformat()}")
 		else:
-			return {"ok": False, "msg": f"Invalid interval parameter: type must be int or float, not {type(order['interval'])}", "input": query.order}
+			return {"ok": False, "msg": f"Invalid interval parameter: {order['interval']} of type {type(order['interval'])}", "input": query.order}
 	elif "time" in order:
 		if valid_datetime(order["time"]):
 			order["time"] = datetime.datetime.fromisoformat(order["time"])
@@ -411,9 +425,9 @@ application = bottle.default_app()
 print("[INFO] Created default_app")
 
 if __name__ == "__main__":
-	print("[INFO] Starting dev server on", global_config["server_addr"], global_config["server_port"], "with debug",
+	print("[INFO] Starting multithread server on", global_config["server_addr"], global_config["server_port"], "with debug",
 		["disabled", "enabled"][global_config["debug"]] + "...")
 	run(app=application, host=global_config["server_addr"], port=global_config["server_port"],
-		debug=global_config["debug"])
+		debug=global_config["debug"], server = "cheroot")
 else:
 	print("[INFO] Not in __main__, continuing with default_app only instantiated")

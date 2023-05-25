@@ -1,22 +1,32 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en">
 <head></head>
 <body>
-<p>
-    <b>This is an incomplete mock-up of the client, for design purposes. This page is not fully functional.</b>
-</p>
-<div id="output" >
-    <p>Welcome, commander.</p>
-    <p>Commands: scan, summary, agenda, burn, cancel</p>
+<style>
+#wrap {
+    width: 960px;
+    margin: 0 auto;
+    padding: 6px;
+    /*text-align: center;*/
+}
+
+</style>
+<div id="wrap">
+    <p>
+        <b>This is an incomplete mock-up of the client, for design purposes. This page is not fully functional.</b>
+    </p>
+    <div id="output">
+        <p>Welcome, commander.</p>
+        <p>Commands: scan, summary, agenda, burn, cancel</p>
+    </div>
+
+    <br>
+    <input type="text" id="command">
+    <input type="button" value="Enter command" id="submit_btn">
+    <hr>
+    <p>Authcode: <input id="authcode" type="text"></p>
+    <p>Vessel: <input type="text" id="vessel"></p>
+    <p>System: <input type="text" id="system" value="{{GAMENAME}}" disabled></p>
 </div>
-
-<br>
-<input type="text" id="command">
-<input type="button" value="Enter command" id="submit_btn">
-<hr>
-<p>Authcode: <input id="authcode" type="text"></p>
-<p>Vessel: <input type="text" id="vessel"></p>
-<p>System: <input type="text" id="system" value="{{GAMENAME}}" disabled></p>
-
 </body>
 </html>
 
@@ -257,4 +267,5 @@
 
         return xhr.responseText;
     }
+
 </script>

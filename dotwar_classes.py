@@ -23,6 +23,10 @@ def datetime_decode_hook(obj):
 	except:
 		return datetime.datetime.fromisoformat(obj)
 
+class team:
+	SELF = -1
+	DEFENDER = 0
+	ATTACKER = 1
 
 class Entity:
 	def __init__(self,
@@ -167,7 +171,7 @@ class Game:
 		self.DEFENSE_RADIUS = 1.12e7  # kilometers
 		self.MAX_INSTANT_ACC = 1.6e7  # km/hr/hr
 		self.MAX_INSTANT_VEL = self.LIGHTSPEED
-		self.SIM_TICK = datetime.timedelta(seconds=1)  # in seconds.
+		self.SIM_TICK = datetime.timedelta(seconds=30)  # in seconds.
 
 		if self.save_exists() and load:
 			self.load()
@@ -369,12 +373,12 @@ class Game:
 					entity.v = (entity.v / mag(entity.v)) * self.MAX_INSTANT_VEL
 			# print("TEST1 velocity:", self.get_entity("TEST1")["v"])
 			unfiltered_collisions = self.test_collisions()  # get "colliding" entities
-			new_collisions = []
+			new_collisions = filter(lambda c: not c in collisions, unfiltered_collisions)
 			# filter collisions so objects remaining in radius after one timestep don't
 			# keep generating collisions and events:
-			for collision in unfiltered_collisions:
+			"""for collision in unfiltered_collisions:
 				if not (collision in collisions):
-					new_collisions.append(collision)
+					new_collisions.append(collision)"""
 			collisions = new_collisions
 			# find collisions that create events
 			for collision in collisions:
@@ -405,6 +409,7 @@ class Game:
 	def update(self, interval: datetime.timedelta):
 		# update over period of time (interval, in hours), including orders and changes in acceleration.
 		# collect orders in interval, and sort
+		real_start = datetime.datetime.now()
 		start_time = self.get_system_time()
 		end_time = start_time + interval
 		orders = sort_orders(self.get_orders_by_time(start_time, end_time))
@@ -433,6 +438,7 @@ class Game:
 		print("SEGMENTS DONE, REMAINING TIME", remaining_timedelta)
 		self.update_interval(remaining_timedelta)
 		print("FINISHED OVERALL UPDATE AT SYSTEM TIME", self.get_system_time())
+		print(f"simulation complete in {datetime.datetime.now() - real_start}")
 		# remove processed orders
 		for order in orders:
 			self.get_entity(order["parent_entity"]).clear_order(order["order_id"])
@@ -441,28 +447,28 @@ class Game:
 	def update_to(self, end_date: datetime.datetime):
 		# end_date: datetime
 		now = self.get_system_time()
-		interval = end_date - now
+		interval = abs(end_date - now)
 		if interval < datetime.timedelta(0):
 			raise ValueError(f"Simulation attempting to time travel by {interval} seconds.")
 		print("updating to", end_date, "with interval of", interval, "seconds")
 		self.update(interval)
 
 	def test_collisions(self):
-		collisions = []
-		for entity_a in self.system["entities"].values():
-			for entity_b in self.system["entities"].values():
-				if entity_a is not entity_b:
-					# capture check:
-					if (entity_a.team == 1 and
-							entity_b.entity_type == "planet" and
-							entity_b.captured is not True and
-							(dist(entity_a.r, entity_b.r) <= self.CAPTURE_RADIUS)):
-						collisions.append([entity_a, entity_b, 'CAPTURE'])
-					# defense check:
-					if (entity_a.team == 0 and
-							entity_b.team == 1 and
-							dist(entity_a.r, entity_b.r) <= self.DEFENSE_RADIUS):
-						collisions.append([entity_a, entity_b, 'DEFENSE'])
+		collisions = set()
+		entities = set(self.system["entities"].values())
+		for entity_a in filter(lambda e: e.entity_type != "planet", entities):
+			for entity_b in filter(lambda e: e.name != entity_a.name, entities):
+				# capture check:
+				if (entity_a.team == team.ATTACKER and
+						entity_b.entity_type == "planet" and
+						entity_b.captured is False and
+						(dist(entity_a.r, entity_b.r) <= self.CAPTURE_RADIUS)):
+					collisions.add((entity_a, entity_b, 'CAPTURE'))
+				# defense check:
+				if (entity_a.team == team.DEFENDER and
+						entity_b.team == 1 and
+						dist(entity_a.r, entity_b.r) <= self.DEFENSE_RADIUS):
+					collisions.add((entity_a, entity_b, 'DEFENSE'))
 
 		return collisions
 
