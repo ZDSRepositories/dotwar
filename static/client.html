@@ -16,7 +16,7 @@
     </p>
     <div id="output">
         <p>Welcome, commander.</p>
-        <p>Commands: scan, summary, agenda, burn, cancel</p>
+        <p>Commands: scan, summary, agenda, burn, cancel, status</p>
     </div>
 
     <br>
@@ -65,42 +65,49 @@
     }
 
     function parse(str) {
+        console.log("starting parse on "+str);
         let m;
         // what a readable one-liner amirite
-        let match = ((m = /\b(?:burn|cancel|scan|summary|agenda)\b/.exec(str)) ? m[0] : null)
+        let match = ((m = /\b(?:burn|cancel|scan|summary|agenda|status)\b/.exec(str)) ? m[0] : null)
 
         switch (match) {
             case "burn":
                 return {
                     "match": match, "command": str, "parsed": parse_burn(str)
                 };
-                break
+                break;
             case "cancel":
                 console.log("cancel")
                 return {
                     "match": match, "command": str, "parsed": parse_cancel(str)
                 };
-                break
+                break;
             case "scan":
                 console.log("scan")
                 return {
                     "match": match, "command": str, "parsed": parse_scan(str)
                 };
-                break
+                break;
             case "summary":
                 console.log("summary")
                 return {
                     "match": match, "command": str, "parsed": parse_summary(str)
                 };
-                break
+                break;
             case "agenda":
                 console.log("agenda")
                 return {
                     "match": match, "command": str, "parsed": parse_agenda(str)
                 };
-                break
+                break;
+            case "status":
+                console.log("status")
+                return {
+                    "match": match, "command": str, "parsed": parse_status(str)
+                };
+                break;
             default:
-                console.log("match fail");
+                console.log("parse match fail; input "+status);
         }
     }
 
@@ -127,8 +134,12 @@
                 console.log("handling agenda")
                 return handle_agenda(args.parsed);
                 break
+            case "status":
+                console.log("handling status")
+                return handle_status(args.parsed);
+                break
             default:
-                console.log("match fail");
+                console.log("handle match fail");
         }
     }
 
@@ -194,6 +205,10 @@
         return str
     }
 
+    function parse_status(str) {
+        return str
+    }
+
     // specific command execution
     // BURN
     function handle_burn(args) {
@@ -228,6 +243,12 @@
     // AGENDA
     function handle_agenda(args) {
         response = post_local("/game/" + get_system() + "/agenda", "html=1&authcode="+get_authcode()+"&vessel="+get_vessel());
+        return response;
+    }
+
+    // STATUS
+    function handle_status(args) {
+        response = post_local("/game/" + get_system() + "/status", "html=1");
         return response;
     }
     //** END COMMAND-SPECIFIC HANDLERS**

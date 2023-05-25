@@ -140,10 +140,11 @@ def game_status(name):
 	ret["game"] = g_json
 	if ("html" in query) and valid_json(query.html) and json.loads(query.html):
 		return "<br>".join(["Game '" + name + "' status:",
-							"Created on: " + g_json["created_on"] + " (" + datetime.datetime.fromisoformat(
+							f'Created on: {g_json["created_on"]} (' + datetime.datetime.fromisoformat(
 								g_json["created_on"]).strftime("%b %d %Y, %X") + ")",
 							"System time: " + g_json["system_time"] + " (" + datetime.datetime.fromisoformat(
-								g_json["system_time"]).strftime("%b %d %Y, %X") + ")"
+								g_json["system_time"]).strftime("%b %d %Y, %X") + ")",
+		                    f"{len(game.system['entities'])} entities"
 							])
 	return ret
 
