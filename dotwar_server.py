@@ -1,3 +1,4 @@
+# FUN WITH GLOBALS
 import datetime
 
 import bottle
