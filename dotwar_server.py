@@ -1,4 +1,3 @@
-# FUN WITH GLOBALS
 import datetime
 
 import bottle
@@ -21,6 +20,8 @@ from urllib.parse import unquote
 #  /game/<name>/agenda?vessel=&authcode=
 #  /add_order?vessel=&authcode=&order={"task":"burn","args":{"a":[3d acceleration]}},"time":ISO date string}
 #  ....
+
+GAMES = {}
 
 def load_config(directory=sys.path[0]):
 	if os.path.exists(os.path.join(directory, "config.json")):
@@ -391,8 +392,14 @@ def delete_order(name):
 
 
 # @route("/game/<name>/update_simulation_debug")
-def update_to_now(name=None, game: dotwar_classes.Game = None):
-	game = dotwar_classes.Game(name, global_config["game_dir"]) if game is None else game
+def update_to_now(name=None, game = None):
+	print(GAMES)
+	if not name in GAMES:
+		game = dotwar_classes.Game(name, global_config["game_dir"])
+		GAMES[name] = game
+	else:
+		game = GAMES[name]
+	#game = dotwar_classes.Game(name, global_config["game_dir"]) if not name in GAMES else GAMES[name]
 	old = game.get_system_time()
 	now = datetime.datetime.now()
 	print("simulation will be updated from {} to {}, delta of {}".format(old, now, (now - old)), "...")
