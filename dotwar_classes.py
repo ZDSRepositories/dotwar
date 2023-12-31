@@ -178,6 +178,14 @@ class Game:
 		if self.save_exists() and load:
 			self.load()
 
+	def __enter__(self):
+		self.load()
+		return self
+
+	def __exit__(self, exception_type, exception_value, exception_traceback):
+		self.update(datetime.timedelta(seconds=1))
+		self.save()
+
 	def save_exists(self):
 		# check if save file exists already. note this does not verify the contents of the save.
 		return (os.path.exists(self.system_path) and os.path.exists(
