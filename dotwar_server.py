@@ -384,7 +384,6 @@ def delete_order(name):
 	vessel.clear_order(order_id)
 	pending_count = len(vessel.get_pending())
 	game.save()
-
 	if "html" in query and bool(json.loads(query.html)):
 		return {"ok": True, "removed_id": order_id, "pending_count": pending_count}
 	else:
